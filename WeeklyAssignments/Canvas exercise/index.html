@@ -14,6 +14,8 @@
         $(function() {
           var canvas = $('#canvas')[0];
           var ctx = canvas.getContext('2d');
+          var lat = 60;
+          var lon = 24;
         
           var header = $('div[data-role="header"]:visible');
           var footer = $('div[data-role="footer"]:visible');
@@ -23,12 +25,24 @@
           var content_height = viewport_height - header.outerHeight() - footer.outerHeight();
           /* Trim margin/border/padding height */
           content_height -= (content.outerHeight() - content.height());
-          
           canvas.width = viewport_width;
           canvas.height = content_height;
 
+          //Get location ASAP, regardless of accuracy
+          
+          function locate() {
+              navigator.geolocation.getCurrentPosition(function(position) {  
+              lat = position.coords.latitude;
+              lon = position.coords.longitude;
+            // (position.coords.latitude, position.coords.longitude);  
+          });
+          ctx.fillText("Current location: ("+lat+","+lon+")", 10, 10);
+          } 
+
+          locate();
           $("#refresh").bind("click", function(e) {
             e.preventDefault();
+            locate();
           });
           $("#save_local").bind("click", function(e) {
             e.preventDefault();
@@ -37,6 +51,7 @@
             e.preventDefault();
           });
         })
+        
       //]]>
     </script>
   </head>
