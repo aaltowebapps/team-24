@@ -1,8 +1,4 @@
-// Sample locations for development of mapping components.
-// Data structure is dummy, to be replaced by our DB schema.
-
-
-[
+{"locations" : [
 	{	"locName" : "Aaltoes",
 		"long" : 60.1804469,
 		"lat" : 24.8315503
@@ -47,4 +43,4 @@
 		"long" : 60.1660421,
 		"lat" : 24.9009635
 	}
-]
+]}
