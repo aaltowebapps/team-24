@@ -6,8 +6,11 @@ get '/' do
 	locationFile = File.open("locationData.json", "r")
 	rawLocationData = locationFile.read
 	content_type :json
-	@jsonLocationData = JSON.load(rawLocationData)					# Get JSON data
-	@locationCount = @jsonLocationData.fetch("locations").count		# Number of locations in DB
+	@jsonLocationData = JSON.load(rawLocationData)			# Get JSON data
+	puts @jsonLocationData
+	@locationCount = @jsonLocationData["locations"].count	# Number of locations in DB
+
+	content_type "text/html"
 	haml :index
 end
 
