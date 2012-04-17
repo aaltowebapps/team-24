@@ -13,14 +13,16 @@ $(function() {
 	
 		// Display pins with data from JSON database.
 		var jsonLocationData = $.parseJSON($("#jsonLoc").html());			// Parse div-stored JSON string.
-		
-		for (var i = 0; i < jsonLocationData.locations.length; i++) {
-			var currentLoc = jsonLocationData.locations[i];
-			console.log(currentLoc);														// Print iterator's current location in server console (for debugging).
-			currentLatLng = new google.maps.LatLng(currentLoc.lat, currentLoc.long);		// Create Google location object. 
-			marker = new google.maps.Marker({position: currentLatLng, map: map, title: currentLoc.locName});
-		}		
-			
+
+		// Before event pins are added to the map, ensure that it has been fully loaded.
+		google.maps.event.addListenerOnce(map, 'tilesloaded', function() {
+			for (var i = 0; i < jsonLocationData.locations.length; i++) {
+				var currentLoc = jsonLocationData.locations[i];
+				console.log(currentLoc);														// Print iterator's current location in server console (for debugging).
+				currentLatLng = new google.maps.LatLng(currentLoc.lat, currentLoc.lng);		// Create Google location object. 
+				marker = new google.maps.Marker({position: currentLatLng, map: map, title: currentLoc.locName});
+			}		
+		});		
 	
 	});
 });
