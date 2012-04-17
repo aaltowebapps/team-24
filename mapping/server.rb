@@ -6,7 +6,7 @@ get '/' do
 	locationFile = File.open("locationData.json", "r")
 	@rawLocationData = locationFile.read
 	content_type :json
-	@jsonLocationData = JSON.load(@rawLocationData)			# Get JSON data
+	@jsonLocationData = JSON.load(@rawLocationData)			# Serialize json string
 	puts @jsonLocationData
 	@locationCount = @jsonLocationData["locations"].count	# Number of locations in DB
 
