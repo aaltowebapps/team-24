@@ -1,7 +1,6 @@
 # Team 24 — README
 
-The application is now available online: at 
-<http://team-24.herokuapp.com/>.
+The application is now available online at <http://team-24.herokuapp.com/>.
 
 Please note that the most recent commit may have not yet been pushed to heroku. To run the most recent commit: 
 
