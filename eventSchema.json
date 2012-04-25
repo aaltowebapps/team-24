@@ -1,0 +1,16 @@
+// Event JSON schema. This is an informal description by example and does not conform to any standard for the specification of JSON schemata ( such as that of the Internet Engineering Task Force (IETF), http://tools.ietf.org/html/draft-zyp-json-schema-03 ).
+
+
+{
+	"event"	:	{
+				"title"			:	"Testevent",
+				"createdOn"		:	744073709551615,
+				"duration"		:	5,
+				"creatorID"		:	"Team-28",
+				"location"		:	{
+										"latitude" : 28.4,
+										"longitude": -15.0
+									},
+				"notes"			:	"Do not miss this event!"
+				}
+}
