@@ -15,5 +15,3 @@ Please note that the most recent commit may have not yet been pushed to heroku. 
    
 
 This page will be updated with usage info as the app evolves.
-
---- 
