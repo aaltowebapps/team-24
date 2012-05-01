@@ -1,6 +1,19 @@
+var map;
+
+function placeMarker (loc) {
+    var latitude;
+    var longitude;
+    var markLocation = new google.maps.Marker({
+            position: loc,
+            draggable: true,
+            map: map
+        });
+    map.setCenter(loc);
+    latitude = loc.lat();  // to be saved in the new event!
+    longitude = loc.lng();
+}
+
 $(function() {
-	
-	var map;
 	var marker;
 	var mapOptions;
 	
@@ -23,7 +36,11 @@ $(function() {
 				currentLatLng = new google.maps.LatLng(currentLoc.lat, currentLoc.lng);		// Create Google location object. 
 				marker = new google.maps.Marker({position: currentLatLng, map: map, title: currentLoc.locName});
 				console.log(jsonLocationData);
-			}		
+			}
+        });         
+		
+		google.maps.event.addListener(map, 'click', function(event){
+            placeMarker(event.latLng);		
 		});			
 	});
 });
