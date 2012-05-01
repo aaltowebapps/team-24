@@ -7,7 +7,7 @@ $(function() {
 	navigator.geolocation.getCurrentPosition(function(geodata) {
 		// Get current position and set map options.
 		var currentLatLng = new google.maps.LatLng(geodata.coords.latitude, geodata.coords.longitude);
-		mapOptions = {center: currentLatLng, zoom: 8, mapTypeId: google.maps.MapTypeId.ROADMAP};				
+		mapOptions = {center: currentLatLng, zoom: 14, mapTypeId: google.maps.MapTypeId.ROADMAP};				
 
 		// Initialize map with current position.
 		map = new google.maps.Map(document.getElementById("map"), mapOptions);

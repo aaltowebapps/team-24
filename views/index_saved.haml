@@ -1,0 +1,29 @@
+!!! 5
+%html
+	%head
+		-# Standard mobile HTML meta
+		%meta(charset="utf-8")
+		%meta(content="IE=edge,chrome=1" http-equiv="X-UA-Compatible")
+		%meta(name="viewport" content="width=device-width, user-scalable=0, initial-scale=1.0, maximum-scale=1.0;")
+		
+		-# Include jQuery & map libraries
+		%link(rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css")
+		%script(type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js")
+		%script(type="text/javascript" src="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.js")
+		%script(type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true")
+		
+		%title JSONpinsOnMap	
+		
+		%script(type="text/javascript" src="./mapping.js")
+		
+	%body
+		-# Display header of page, including the number of pins.
+		There are 
+		%strong #{@locationCount} locations
+		in the database.
+
+		-# Store the JSON string in hidden div for access by JavaScript.
+		%locationsDiv#jsonLoc{"style" => "display:none"} #{@rawLocationData}
+		
+		-# Create the map div.
+		#map{"style" => "width: 610px; height: 407px"}
