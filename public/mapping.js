@@ -16,7 +16,9 @@ function placeMarker(loc) {
 		bubble.open(map, markLocation);
     });
 
-    map.setCenter(loc);
+    // Only center the map around the new pin if the new pin is outside the map's viewport
+    // (to avoid confusing panning of the viewport whenever the user creates event by tapping the map).
+    if (!map.getBounds().contains(markLocation.getPosition())) map.setCenter(loc);
     latitude = loc.lat();  // to be saved in the new event!
     longitude = loc.lng();
 }
@@ -32,22 +34,22 @@ $(function() {
     });
 
 	navigator.geolocation.getCurrentPosition(function(geodata) {
-		// Get current position and set map options.
+		// Get current position, set map options, create map.
 		var currentLatLng = new google.maps.LatLng(geodata.coords.latitude, geodata.coords.longitude);
 		mapOptions = {center: currentLatLng, zoom: 14, mapTypeId: google.maps.MapTypeId.ROADMAP};
-
-		// Initialize map with current position.
 		map = new google.maps.Map(document.getElementById("map"), mapOptions);
-		placeMarker(currentLatLng);
 	
-		// Display pins with data from JSON database.
-		var jsonLocationData = $.parseJSON($("#jsonLoc").html());			// Parse div-stored JSON string.
+		// Parse JSON previously stored in invisible div.
+		var jsonLocationData = $.parseJSON($("#jsonLoc").html());
 
 		// Before event pins are added to the map, ensure that it has been fully loaded.
 		google.maps.event.addListenerOnce(map, 'idle', function() {
+			// Pin current location onto map.
+			placeMarker(currentLatLng);
+			// Pin locations stored in database.
 			for (var i = 0; i < jsonLocationData.locations.length; i++) {
 				var currentLoc = jsonLocationData.locations[i];
-				currentLatLng = new google.maps.LatLng(currentLoc.lat, currentLoc.lng);		// Create Google location object.
+				currentLatLng = new google.maps.LatLng(currentLoc.lat, currentLoc.lng);
 				placeMarker(currentLatLng);
 				console.log(jsonLocationData);
 			}
