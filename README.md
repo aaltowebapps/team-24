@@ -11,7 +11,9 @@ Please note that the most recent commit may have not yet been pushed to heroku. 
 	
 3. Run the app in your browser:
 
-        localhost:4567
+        localhost:5678
+   
+   (NB: The server port is now 5678 to allow concurrent running of the course example applications on the same machine.)
    
 
 This page will be updated with usage info as the app evolves.

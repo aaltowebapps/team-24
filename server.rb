@@ -2,6 +2,8 @@ require 'sinatra'
 require 'haml'
 require 'json'
 
+set :port, 5678
+
 get '/' do
 	locationFile = File.open("locationData.json", "r")
 	@rawLocationData = locationFile.read

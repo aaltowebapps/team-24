@@ -23,9 +23,9 @@
         %h1 There are #{@locationCount} events near YOU:
       %div(class="content" data-role="content")
         -# Store the JSON string in hidden div for access by JavaScript.
-        %locationsDiv#jsonLoc{"style" => "display:none"} #{@rawLocationData}
+        %locationsDiv#jsonLoc{:style => "display:none"} #{@rawLocationData}
         -# Create the map div.
-        #map{"style" => "width: 610px; height: 407px"}
+        #map{:style => "width: 610px; height: 407px"}
       %div(data-role="footer" data-position="fixed")
         %div(data-role="navbar")
           %ul
@@ -35,7 +35,7 @@
               %a(href="#newEvent" target="_parent") New Event
       %br
 
-    %div{'id' => "newEvent", 'data-role' => "page", 'data-add-back-btn' => "true"}
+    %div{:id => "newEvent", :"data-role" => "page", :"data-add-back-btn" => "true"}
       %header(data-role="header")
         %h1 New event:
       %div(class="content" data-role="content")
@@ -44,11 +44,24 @@
         %h6 
       %br
 
+    %div#editEvent{:'data-role' => "page", :'data-add-back-btn' => "true"}
+      #header{:'data-role' => 'header'}
+        %h1 Event details
+      %div.content{:'data-role' => 'content'}
+        %p Test.
+
     %div(id="listEvents" data-role="page" data-add-back-btn="true")
       %header(data-role="header")
         %h1 Happening now:
-      %div(class="content" data-role="content")
-        %strong{:class => "code2", :id => "message2"} The list of events will be displayed here:
+      %div(class="code2" data-role="content")
+        %strong{:class => "code2", :id => "message2"}
+          %p Unfolding right now:
+        %ul(data-role="listview")
+          -# This code (and more) should be replaced once we deploy backbone.js.
+          - @jsonLocationData["locations"].each do |loc|
+            %li
+              %a(data-rel="dialog" href="#editEvent")Event X
+
       %footer(data-role="footer")
         %h6 
       %br
