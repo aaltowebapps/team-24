@@ -6,16 +6,20 @@
     %meta(content="IE=edge,chrome=1" http-equiv="X-UA-Compatible")
     %meta(name="viewport" content="width=device-width, user-scalable=0, initial-scale=1.0, maximum-scale=1.0;")
     
-    -# Include jQuery & map libraries
+    -# Include jQuery, SimpleDialog2 & Google Map libraries
     %link(rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css")
+    %link(rel="stylesheet" href="http://dev.jtsage.com/cdn/simpledialog/latest/jquery.mobile.simpledialog.min.css")
     %script(type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js")
     %script(type="text/javascript" src="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.js")
     %script(type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true")
-    
-    %title JSONpinsOnMap	
-    
+    %script(type="text/javascript" src="http://dev.jtsage.com/cdn/simpledialog/latest/jquery.mobile.simpledialog2.min.js")
+
+    -# Include custom scripts    
     %script(type="text/javascript" src="./mapping.js")
-    
+    %script(type="text/javascript" src="./dialog.js")
+
+    %title JSONpinsOnMap	
+
   %body
     %div(id="main" data-role="page")
       -#Display header of page, including the number of pins.
@@ -36,19 +40,29 @@
       %br
 
     %div{:id => "newEvent", :"data-role" => "page", :"data-add-back-btn" => "true"}
-      %header(data-role="header")
-        %h1 New event:
       %div(class="content" data-role="content")
         %strong{:class => "code1", :id => "message1"} New event form will be added here:
       %footer(data-role="footer")
         %h6 
       %br
 
-    %div#editEvent{:'data-role' => "page", :'data-add-back-btn' => "true"}
-      #header{:'data-role' => 'header'}
-        %h1 Event details
-      %div.content{:'data-role' => 'content'}
-        %p Test.
+    / This is the old dialog code, without the transparency. Preserved here just in case.
+    / 
+    / %div#editEvent{:'data-role' => "page", :'data-add-back-btn' => "true"}
+    /   #header{:'data-role' => 'header'}
+    /     %h1 Event details
+    /   %div.content{:'data-role' => 'content'}
+    /     %form(action="/newEvent" method="post") 
+    /     %input(type="text" name="title" id="title" placeholder="Event description")
+    /     %br/
+    /     %div(data-role = "fieldcontain")
+    /       %label(for = "duration")
+    /       %input(type = "range" id="duration" value=5 min=5 max=300)
+    /     %br/
+    /     %input(type = "text" name="latitude" id="title" placeholder="Latitude")
+    /     %br/
+    /     %button#postEntry(type = "submit") Add
+    /     %button#deleteEntry(type = "delete") Delete
 
     %div(id="listEvents" data-role="page" data-add-back-btn="true")
       %header(data-role="header")
@@ -58,9 +72,10 @@
           %p Unfolding right now:
         %ul(data-role="listview")
           -# This code (and more) should be replaced once we deploy backbone.js.
+          / %a(data-rel="dialog" id="openEditEventDialog" href="#")Event X
           - @jsonLocationData["locations"].each do |loc|
             %li
-              %a(data-rel="dialog" href="#editEvent")Event X
+              %a(data-rel="dialog" id="openEditEventDialog" href="#")Event X
 
       %footer(data-role="footer")
         %h6 

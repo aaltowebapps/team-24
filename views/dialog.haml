@@ -1,0 +1,15 @@
+%div#editEvent{:'data-role' => "page", :'data-add-back-btn' => "true"}
+  #header{:'data-role' => 'header'}
+    %h1 Event details
+  %div.content{:'data-role' => 'content'}
+    %form(action="/newEvent" method="post") 
+    %input(type="text" name="title" id="title" placeholder="Event description")
+    %br/
+    %div(data-role = "fieldcontain")
+      %label(for = "duration")
+      %input(type = "range" id="duration" value=5 min=5 max=300)
+    %br/
+    %input(type = "text" name="latitude" id="title" placeholder="Latitude")
+    %br/
+    %button#postEntry(type = "submit") Add
+    %button#deleteEntry(type = "delete") Delete

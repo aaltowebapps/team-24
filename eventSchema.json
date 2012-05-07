@@ -4,13 +4,15 @@
 {
 	"event"	:	{
 				"title"			:	"Testevent",
-				"createdOn"		:	744073709551615,
-				"duration"		:	5,
-				"creatorID"		:	"Team-28",
+				// "createdOn"	:	744073709551615,
+				"startTime"		:	744073709551615,
+				"duration"		:	5,		// in minutes
+				// "creatorID"		:	"Team-28",
+				"eventID"		:	123,
 				"location"		:	{
 										"latitude" : 28.4,
 										"longitude": -15.0
 									},
-				"notes"			:	"Do not miss this event!"
+				// "notes"			:	"Do not miss this event!"
 				}
 }
