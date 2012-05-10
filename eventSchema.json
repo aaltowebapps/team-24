@@ -5,7 +5,7 @@
 	"event"	:	{
 				"title"			:	"Testevent",
 				// "createdOn"	:	744073709551615,
-				"startTime"		:	744073709551615,
+				// "startTime"	:	744073709551615,
 				"duration"		:	5,		// in minutes
 				// "creatorID"		:	"Team-28",
 				"eventID"		:	123,
