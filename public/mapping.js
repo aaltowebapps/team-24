@@ -36,7 +36,7 @@ $(function() {
 	navigator.geolocation.getCurrentPosition(function(geodata) {
 		// Get current position, set map options, create map.
 		var currentLatLng = new google.maps.LatLng(geodata.coords.latitude, geodata.coords.longitude);
-		mapOptions = {center: currentLatLng, zoom: 14, mapTypeId: google.maps.MapTypeId.ROADMAP};
+		mapOptions = {center: currentLatLng, zoom: 12, mapTypeId: google.maps.MapTypeId.ROADMAP};
 		map = new google.maps.Map(document.getElementById("map"), mapOptions);
 	
 		// Parse JSON previously stored in invisible div.

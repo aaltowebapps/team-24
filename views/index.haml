@@ -48,15 +48,12 @@
       %div(class="code2" data-role="content")
         %ul(data-role="listview")
           -# The following code (and more) should be replaced once we deploy backbone.js.
-          -#- @jsonLocationData["locations"].each do |loc|
-          -#  %li
-          -#    %a(data-rel="dialog" id="openEditEventDialog" href="#")Event X
           - $events.each do |ev|
             %li
-              -#%p (class = "listedTitle")
               %p
-                %strong
-                  =ev[:title]
+                %a(data-rel="dialog" id="openEditEventDialog" href="#")
+                  %strong
+                    =ev[:title]
               %p 
                 date and time:
                 =ev[:date]
@@ -64,7 +61,5 @@
                 duration
                 =ev[:duration]
                 minutes
-              %a(data-rel="dialog" id="openEditEventDialog" href="#") Edit
-          -#end
         
 

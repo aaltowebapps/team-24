@@ -15,12 +15,12 @@ def timestamp
 end
 
 get '/' do
-	locationFile = File.open("locationData.json", "r")
-	@rawLocationData = locationFile.read
-	content_type :json
-	@jsonLocationData = JSON.load(@rawLocationData)			# Serialize json string
-	puts @jsonLocationData
-	@locationCount = @jsonLocationData["locations"].count	# Number of locations in DB
+  locationFile = File.open("locationData.json", "r")
+  @rawLocationData = locationFile.read
+  content_type :json
+  @jsonLocationData = JSON.load(@rawLocationData)      # Serialize json string
+  puts @jsonLocationData
+  @locationCount = @jsonLocationData["locations"].count  # Number of locations in DB
 
   #load all events into the global variable $events 
   $events = Array.new
@@ -32,15 +32,12 @@ get '/' do
     ev[:latitude] = current_hash["lat"]
     ev[:longitude] = current_hash["lat"]
     ev[:date] = timestamp
-    puts ev
     $events << ev  #append ev to the array
     j+=1
   end
-
   puts $events
 
-
-	content_type "text/html"
-	haml :index
+  content_type "text/html"
+  haml :index
 end
 
