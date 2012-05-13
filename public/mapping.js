@@ -1,32 +1,62 @@
 var map;
 var bubble;
+// curLatLng further below is a global variable representing the current position.
 
-function placeMarker(loc) {
-    // Create pin.
-    var latitude;
-    var longitude;
-    var markLocation = new google.maps.Marker({
-        position: loc,
-        draggable: true,
-        map: map
-    });
-    
+
+
+function placeMarker(loc, isCurrentPos) {
+    // The isCurrentPos argument is a boolean value indicating if the new pin represents the current position.
+    // We want this argument to be optional, for the sake of simplicity.
+    if (typeof isCurrentPos == 'undefined') isCurrentPos = false;
+
+    // Create pin object on map (under the value markLocation).
+    // Use default icon for new events and custom icon for the current location.
+    var markLocation;
+    if (isCurrentPos === false) {
+			markLocation = new google.maps.Marker({
+				position: loc,
+				draggable: true,
+				map: map});
+    } else {
+			markLocation = new google.maps.Marker({
+				position: loc,
+				draggable: false,	// Current position not draggable.
+				map: map,
+				zIndex: 0,			// Current position should not obstruct view to event pins.
+				icon: "arrow.png"});
+	}
+
     // Attach event listener to open modal dialog upon clicking on pin.
-    google.maps.event.addListener(markLocation, 'click', function() {
-		displayDialog();		// This is declared in dialog.js
-    });
+    // But only do that for new events, not for the pin representing the current location.
+    if (isCurrentPos === false) {
+			google.maps.event.addListener(markLocation, 'click', function() {
+				displayDialog();		// This is declared in dialog.js
+			});
+    }
 
-    // Only center the map around the new pin if the new pin is outside the map's viewport
+    // Only center the map around the new pin if the new pin is outside the map's viewport.
     // (to avoid confusing panning of the viewport whenever the user creates event by tapping the map).
     if (!map.getBounds().contains(markLocation.getPosition())) map.setCenter(loc);
-    latitude = loc.lat();  // to be saved in the new event!
-    longitude = loc.lng();
+    
+    // Return the created pin.
+    return markLocation;
 }
 
+
+
+// Bind the "Locate Me" button.
 $(function() {
-	var marker;
+	$("#locateMe").on("click", function() {
+		map.setCenter(currentLatLng);
+	});
+});
+
+
+
+$(function() {
+	var curPosMarker;
 	var mapOptions;
-	
+		
 	// Hide address bar and adjust map div dimensions according to the device at hand.
 	// This needs to be done after every device rotation (i.e. window size change).
 	function resetMapDivDimensions() {
@@ -35,9 +65,10 @@ $(function() {
 		$("#map").height(mapViewportHeight);
 	}
 
+	// Get current position from geolocation API on app startup, and initialize mapping functions.
 	navigator.geolocation.getCurrentPosition(function(geodata) {
-		// Get current position, set map options.
-		var currentLatLng = new google.maps.LatLng(geodata.coords.latitude, geodata.coords.longitude);
+		// Create current position object, set map options.
+		currentLatLng = new google.maps.LatLng(geodata.coords.latitude, geodata.coords.longitude);
 		mapOptions = {
 			center: currentLatLng,
 			zoom: 14,
@@ -58,7 +89,7 @@ $(function() {
 		// Before event pins are added to the map, ensure that it has been fully loaded.
 		google.maps.event.addListenerOnce(map, 'idle', function() {
 			// Pin current location onto map.
-			placeMarker(currentLatLng);
+			curPosMarker = placeMarker(currentLatLng, true);
 			// Pin locations stored in database.
 			for (var i = 0; i < jsonLocationData.locations.length; i++) {
 				var currentLoc = jsonLocationData.locations[i];
@@ -79,4 +110,14 @@ $(function() {
 			google.maps.event.trigger(map, 'resize');		// Resize the map to fully occupy its div.
 		});
 	});
+	
+	// Refresh the current location coordinates and pin every 30 sec at most.
+	navigator.geolocation.watchPosition(
+		function(geodata) {
+			currentLatLng = new google.maps.LatLng(geodata.coords.latitude, geodata.coords.longitude);
+			curPosMarker.setPosition(currentLatLng);
+		},
+		function() {},
+		{enableHighAccuracy:true, maximumAge:30000, timeout:5000}
+	);
 });

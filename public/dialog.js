@@ -1,7 +1,11 @@
 // Note that displayDialog and isDialogOpen, as declared below, are global variables. It is bad practice to have a global variable in this file we're in a hurry.
 
+
+
 // By default, the dialog is closed.
 isDialogOpen = false;
+
+
 
 // The following function opens a modal dialog using the SimpleDialog2 jQuery plugin.
 displayDialog = function() {
@@ -19,15 +23,21 @@ displayDialog = function() {
 	isDialogOpen = true;
 };
 
+
+
 // Customize the error message of the jQuery form validator.
 $(function () {
 	$.mobile.pageLoadErrorMessage = 'Event title missing!';
 });
 
+
+
 // Attach a click event listener to the "List view" button of the home screen.
 $(document).on("click", "#openEditEventDialog", function() {
 	displayDialog();
 });
+
+
 
 // Create touchmove handler to disable scrolling when the dialog is open.
 $(function() {

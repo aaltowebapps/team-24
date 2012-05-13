@@ -41,7 +41,7 @@
       %header(id="header" data-role="header")
         %h1 #{@locationCount} Events Live
         %a(href="#listEvents" data-icon="grid") List
-        %a(href="#locateMe" data-icon="myapp-maptarget" data-iconpos="notext")
+        %a(id="locateMe" href="#" data-icon="myapp-maptarget" data-iconpos="notext")
       %div(id="content" class="content" data-role="content" style="padding-left: 0px; padding-right: 0px; padding-bottom: 0px; padding-top: 0px;")
         -# Store the JSON string in hidden div for access by JavaScript.
         %locationsDiv#jsonLoc{:style => "display:none"} #{@rawLocationData}
