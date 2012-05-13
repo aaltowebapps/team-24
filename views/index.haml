@@ -21,6 +21,11 @@
     %script(type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true")
     %script(type="text/javascript" src="http://dev.jtsage.com/cdn/simpledialog/latest/jquery.mobile.simpledialog2.min.js")
 
+    %script(type="text/javascript" src="../public/handlebars-1.0.0.beta.6.js")
+    %script(type="text/javascript" src="../public/underscore.js")
+    %script(type="text/javascript" src="../public/json2.js")
+    %script(type="text/javascript" src="../public/backbone.js")
+
     -# Include custom scripts (static files are served from the ./public folder).
     %script(type="text/javascript" src="mapping.js")
     %script(type="text/javascript" src="dialog.js")
@@ -34,8 +39,118 @@
       background-image: url("maptarget.png");
       }
 
+    :javascript
+      var Templates = {};
+      var events;
+      
+      var Event = Backbone.Model.extend ({
+      });
+
+      var Events = Backbone.Collection.extend ({
+        model: Event,
+        url: '/events'
+      });
+            
+      $(function() {
+        //Load the templates and store them in a global variable
+        $('script[type="text/x-handlebars-template"]').each(function () {
+          Templates[this.id] = Handlebars.compile($(this).html());
+        });
+        
+
+        //View for rendering one entry of the blog
+        var ItemView = Backbone.View.extend ({
+          tagName: "li",
+          events: {
+            "blur [contenteditable]": "saveValues"
+          },
+          initialize: function() {
+            this.model.bind('change', this.render, this);
+            this.template = Templates.event;
+          },
+          render: function() {
+            $(this.el).html( this.template(this.model.toJSON()) );
+            return this;
+          },
+          saveValues: function() {
+            this.model.save({
+              title: this.$("[data-name='title']").html(),
+              date: this.$("[data-name='date']").html(),
+              duration: this.$("[data-name='duration']").html()
+            },{silent: true});
+          }
+        });
+
+        //View for rendering the list of entries
+        var ListView = Backbone.View.extend ({
+          el: $("#eventsList"),
+          events: {
+          },
+          initialize: function() {
+            this.collection.bind('reset', this.render, this);
+            this.collection.bind('all', this.render, this);
+          },
+          render: function() {
+            var el = this.$el;
+            el.empty();
+            this.collection.each(function(item) {
+              var itemView = new ItemView({model: item});
+              el.append(itemView.render().el);
+            });
+            this.$el.listview('refresh');
+            return this;
+          },
+        });
+        
+        //View for creating a new entry
+        var NewView = Backbone.View.extend({
+          el: $("#newEvent"),
+          events: {
+            "click #eventEntry": "createNew"
+          },
+          initialize: function() {
+            this.title = this.$("#title");
+            this.date = this.$("#date");
+            this.duration = this.$("#duration");
+            
+          },
+          createNew: function() {
+            this.$(".invalid").removeClass("invalid");
+            if (this.$(":invalid").length) {
+              this.$(":invalid").addClass("invalid");
+              return false;
+            }
+            this.collection.create({
+              title: this.title.val(),
+              date: this.date.val(),
+              duration: this.duration.val()
+              //email: localStorage.email,
+              //name: localStorage.name
+            }, {at: 0});
+            this.title.val("");
+            this.date.val("");
+            this.duration.val("");
+          }
+        });
+
+        //Trigger an update of the tasks collection
+        //$("#refresh").live('click',function () {
+        //  events.fetch();
+        //});
+        
+        //Instantiate the collection of articles
+        events = new Events();
+
+        //Instantiate the views
+        var listView = new ListView({collection: events});
+        var newView = new NewView({collection: events});
+        
+        //Fetch the latest tasks and trigger an update of the views
+        events.fetch();
+      })
+
   %body(style="background: black;")
-   
+
     -# Home page (with map)
     %div(id="main" data-role="page")      
       %header(id="header" data-role="header")
@@ -48,6 +163,8 @@
         -# Create the map div.
         #map(width="100%" height="auto")
       
+    = haml :templates
+
     -# List of events
     %div(id="listEvents" data-role="page" data-add-back-btn="true")
       %header(data-role="header")
