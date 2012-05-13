@@ -7,13 +7,17 @@
     %meta(charset="utf-8")
     %meta(content="IE=edge,chrome=1" http-equiv="X-UA-Compatible")
     %meta(name="viewport" content="width=device-width, user-scalable=0, initial-scale=1.0, maximum-scale=1.0;")
-   
+
+    -# This is supposed to turn the iOS Safari status bar black. But it doesn't work. Don't (yet) know why.
+    -# (And yes, I did try launching the app directly from the iOS home screen, per the Apple documentation.)
+    %meta (name="apple-mobile-web-app-capable" content="yes")
+    %meta (name="apple-mobile-web-app-status-bar-style" content="black")
+
     -# Include jQuery, SimpleDialog2 & Google Map libraries
-    %link(rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css")
+    %link(rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css")
     %link(rel="stylesheet" href="http://dev.jtsage.com/cdn/simpledialog/latest/jquery.mobile.simpledialog.min.css")
-    %script(type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js")
-    %script(type="text/javascript" src="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.js")
- 
+    %script(type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js")
+    %script(type="text/javascript" src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js")
     %script(type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true")
     %script(type="text/javascript" src="http://dev.jtsage.com/cdn/simpledialog/latest/jquery.mobile.simpledialog2.min.js")
 
@@ -24,27 +28,30 @@
     -# App name
     %title Live Now!	
 
-  %body
+    -# Custom icon for "current position" header icon
+    :css
+      .ui-icon-myapp-maptarget {
+      background-image: url("maptarget.png");
+      }
+
+  %body(style="background: black;")
    
     -# Home page (with map)
     %div(id="main" data-role="page")      
-      %header(data-role="header")
-        %h1 #{@locationCount} events are currently live
-      %div(class="content" data-role="content")
+      %header(id="header" data-role="header")
+        %h1 #{@locationCount} Events Live
+        %a(href="#listEvents" data-icon="grid") List
+        %a(href="#locateMe" data-icon="myapp-maptarget" data-iconpos="notext")
+      %div(id="content" class="content" data-role="content" style="padding-left: 0px; padding-right: 0px; padding-bottom: 0px; padding-top: 0px;")
         -# Store the JSON string in hidden div for access by JavaScript.
         %locationsDiv#jsonLoc{:style => "display:none"} #{@rawLocationData}
         -# Create the map div.
-        #map{:style => "width: 610px; height: 407px"}
-      %div(data-role="footer" data-position="fixed")
-        %div(data-role="navbar")
-          %ul
-            %li
-              %a(href="#listEvents" target="_parent") List Events
+        #map(width="100%" height="auto")
       
     -# List of events
     %div(id="listEvents" data-role="page" data-add-back-btn="true")
       %header(data-role="header")
-        %h1 Events currently live
+        %h1 #{@locationCount} Events Live
       %div(class="code2" data-role="content")
         %ul(data-role="listview")
           -# The following code (and more) should be replaced once we deploy backbone.js.

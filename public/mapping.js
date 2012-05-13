@@ -11,9 +11,9 @@ function placeMarker(loc) {
         map: map
     });
     
-    // Add event listener to pin to display bubble on click.
+    // Attach event listener to open modal dialog upon clicking on pin.
     google.maps.event.addListener(markLocation, 'click', function() {
-		bubble.open(map, markLocation);
+		displayDialog();		// This is declared in dialog.js
     });
 
     // Only center the map around the new pin if the new pin is outside the map's viewport
@@ -27,16 +27,29 @@ $(function() {
 	var marker;
 	var mapOptions;
 	
-	// Create the info window (hereby referred to as 'bubble').
-	bubble = new google.maps.InfoWindow({
-		maxWidth: '40px',
-		content: '<div contentEditable = "true">Placeholder Text</div>'
-    });
+	// Hide address bar and adjust map div dimensions according to the device at hand.
+	// This needs to be done after every device rotation (i.e. window size change).
+	function resetMapDivDimensions() {
+		window.scrollTo(0, 1);
+		var mapViewportHeight = window.innerHeight - $("#header").height();
+		$("#map").height(mapViewportHeight);
+	}
 
 	navigator.geolocation.getCurrentPosition(function(geodata) {
-		// Get current position, set map options, create map.
+		// Get current position, set map options.
 		var currentLatLng = new google.maps.LatLng(geodata.coords.latitude, geodata.coords.longitude);
-		mapOptions = {center: currentLatLng, zoom: 14, mapTypeId: google.maps.MapTypeId.ROADMAP};
+		mapOptions = {
+			center: currentLatLng,
+			zoom: 14,
+			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			zoomControl: false,
+			streetViewControl: false
+		};
+		
+		// Create appropriately sized div for the map.
+		resetMapDivDimensions();
+
+		// Create map.
 		map = new google.maps.Map(document.getElementById("map"), mapOptions);
 	
 		// Parse JSON previously stored in invisible div.
@@ -55,8 +68,15 @@ $(function() {
 			}
         });
 		
+		// Attach event handler for map to create a pin upon tapping.
 		google.maps.event.addListener(map, 'click', function(event) {
             placeMarker(event.latLng);
         });
+
+		// On the mobile, window is resized when the device is rotated. In those cases, we resize the div accordingly and trigger a resize event for the map.
+		$(window).resize(function (){
+			resetMapDivDimensions();		// Resize the div in which the map is locate.
+			google.maps.event.trigger(map, 'resize');		// Resize the map to fully occupy its div.
+		});
 	});
 });
