@@ -1,9 +1,8 @@
 var map;
-var bubble;
-// curLatLng further below is a global variable representing the current position.
+var currentLatLng;
 
 
-
+// The following function adds a pin to the map.
 function placeMarker(loc, isCurrentPos) {
     // The isCurrentPos argument is a boolean value indicating if the new pin represents the current position.
     // We want this argument to be optional, for the sake of simplicity.
@@ -54,7 +53,7 @@ $(function() {
 
 
 $(function() {
-	var curPosMarker;
+	var currentPosMarker;
 	var mapOptions;
 		
 	// Hide address bar and adjust map div dimensions according to the device at hand.
@@ -89,22 +88,22 @@ $(function() {
 		// Before event pins are added to the map, ensure that it has been fully loaded.
 		google.maps.event.addListenerOnce(map, 'idle', function() {
 			// Pin current location onto map.
-			curPosMarker = placeMarker(currentLatLng, true);
+			currentPosMarker = placeMarker(currentLatLng, true);
 			// Pin locations stored in database.
 			for (var i = 0; i < jsonLocationData.locations.length; i++) {
-				var currentLoc = jsonLocationData.locations[i];
-				currentLatLng = new google.maps.LatLng(currentLoc.lat, currentLoc.lng);
-				placeMarker(currentLatLng);
-				console.log(jsonLocationData);
+				var tempLoc = jsonLocationData.locations[i];
+				var tempLatLng = new google.maps.LatLng(tempLoc.lat, tempLoc.lng);
+				placeMarker(tempLatLng);
 			}
         });
 		
-		// Attach event handler for map to create a pin upon tapping.
+		// Handler to create pins on tap.
 		google.maps.event.addListener(map, 'click', function(event) {
             placeMarker(event.latLng);
         });
 
-		// On the mobile, window is resized when the device is rotated. In those cases, we resize the div accordingly and trigger a resize event for the map.
+		// On the mobile, window is resized when the device is rotated.
+		// In those cases, we resize the div accordingly and trigger a resize event for the map.
 		$(window).resize(function (){
 			resetMapDivDimensions();		// Resize the div in which the map is locate.
 			google.maps.event.trigger(map, 'resize');		// Resize the map to fully occupy its div.
@@ -115,7 +114,7 @@ $(function() {
 	navigator.geolocation.watchPosition(
 		function(geodata) {
 			currentLatLng = new google.maps.LatLng(geodata.coords.latitude, geodata.coords.longitude);
-			curPosMarker.setPosition(currentLatLng);
+			currentPosMarker.setPosition(currentLatLng);
 		},
 		function() {},
 		{enableHighAccuracy:true, maximumAge:30000, timeout:5000}
