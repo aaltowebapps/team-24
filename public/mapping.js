@@ -70,7 +70,7 @@ $(function() {
 		currentLatLng = new google.maps.LatLng(geodata.coords.latitude, geodata.coords.longitude);
 		mapOptions = {
 			center: currentLatLng,
-			zoom: 14,
+			zoom: 12,
 			mapTypeId: google.maps.MapTypeId.ROADMAP,
 			zoomControl: false,
 			streetViewControl: false
