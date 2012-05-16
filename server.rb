@@ -8,11 +8,11 @@ set :port, 5678
 
 
 
-$events = [{:title => "Event", 
-           :duration => 60,
-           :latitude => 60.1804469,
-           :longitude => 24.8315503,
-           :date => "1.1.2012 10:20:30"}]
+# $events = [{:title => "Event", 
+#            :duration => 60,
+#            :latitude => 60.1804469,
+#            :longitude => 24.8315503,
+#            :date => "1.1.2012 10:20:30"}]
 
 
 
@@ -20,7 +20,8 @@ def timestamp
   Time.now.strftime("%d.%m.%Y %H:%M:%S")
 end
 
-
+$events = Array.new
+$nextID = 0;
 
 get '/' do
   # eventDB = File.open("eventData.json", "r")
@@ -41,7 +42,6 @@ get '/' do
   #   j+=1
   # end
   # puts $events
-
   content_type "text/html"
   haml :index
 end
@@ -58,7 +58,7 @@ end
 
 
 get '/events/:id' do
-  puts "Requesting event with id: #{params[:id]}"
+  puts "/ / / / / / Requesting event with id: #{params[:id]}"
   if params[:id].to_i > $events.length
     status 404
   else
@@ -71,7 +71,7 @@ end
 
 
 post '/events' do
-  puts "Creating event with content: #{request.body.string}"
+  puts "+ + + + + + Creating event with content: #{request.body.string}"
   data = JSON.parse(request.body.string)
   if data.nil?
     status 400
@@ -81,7 +81,7 @@ post '/events' do
       event[field] = data[field.to_s] || ""
     end
     event[:timestamp] = timestamp
-    event[:id] = $events.length
+    event[:id] = $nextID; $nextID += 1
     $events.unshift(event)
     puts "  Created event with content: #{event}"
     event.to_json
@@ -91,7 +91,7 @@ end
 
 
 put '/events/:id' do
-  puts "Updating event with id: #{params[:id]}"
+  puts "> > > > > > Updating event with id: #{params[:id]}"
   data = JSON.parse(request.body.string)
   if data.nil?
     status 400

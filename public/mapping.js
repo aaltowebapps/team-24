@@ -1,15 +1,16 @@
 var map;
-var currentLatLng;
+var pins = [];			// Associative area contains all pins.
+var currentLatLng;		// Google API LatLng object for the current position of the device.
 
 
 
-// The following function adds a pin to the map.
+// The following function adds a pin to the map at the location loc.
 function placeMarker(loc, isCurrentPos) {
     // The isCurrentPos argument is a boolean value indicating if the new pin represents the current position.
     // We want this argument to be optional, for the sake of simplicity.
     if (typeof isCurrentPos == 'undefined') isCurrentPos = false;
 
-    // Create pin object on map (under the value markLocation).
+    // Create pin object on map (and store it in markLocation).
     // Use default icon for new events and custom icon for the current location.
     var markLocation;
     if (isCurrentPos === false) {
@@ -26,6 +27,23 @@ function placeMarker(loc, isCurrentPos) {
 				icon: "arrow.png"});
 	}
 
+	if (!isCurrentPos) {
+		// Create (add & save) a model in the collection.
+		var i = events.create({
+			'title' : 'My New Event',
+			'duration' : 60,
+			'longitude' : loc.lng(),
+			'latitude' : loc.lat()});
+		// Wait until the server's response to this POST request, which includes the ID of the new event,
+		// is received by the browser.
+		i.on('change', function() {
+			// Then create a hash to associate this ID with the newly created pin,
+			// and add append the hash to the pins array.
+			pins.push({'id':i['id'], 'pin':markLocation});
+		});
+		console.log('pins: ', pins);
+	}
+
     // Attach event listener to open modal dialog upon clicking on pin.
     // But only do that for new events, not for the pin representing the current location.
     if (isCurrentPos === false) {
@@ -34,11 +52,11 @@ function placeMarker(loc, isCurrentPos) {
 			});
     }
 
-    // Only center the map around the new pin if the new pin is outside the map's viewport.
-    // (to avoid confusing panning of the viewport whenever the user creates event by tapping the map).
+    // Only center the map to the new pin if the pin is outside the map's current viewport.
+    // (this is to done avoid a confusing "panning" of the viewport whenever the user taps on the map to create an event).
     if (!map.getBounds().contains(markLocation.getPosition())) map.setCenter(loc);
     
-    // Return the created pin.
+	// Return the created pin.
     return markLocation;
 }
 
@@ -101,6 +119,7 @@ $(function() {
 		// Handler to create pins on tap.
 		google.maps.event.addListener(map, 'click', function(event) {
             placeMarker(event.latLng);
+            displayDialog();
         });
 
 		// On the mobile, window is resized when the device is rotated.
