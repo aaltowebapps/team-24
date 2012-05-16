@@ -1,11 +1,16 @@
-%script(id="event" type="text/x-handlebars-template")
-  %a(data-rel="dialog" id="openEditEventDialog" href="#")
-    %strong
-      {{title}}
-  %p(style="padding-left: 15px;")
-    date and time:
-    {{date}}
-  %p(style="padding-left: 15px;")
-    duration
-    {{duration}}
-    minutes
+-# Template for a single event in the list view.
+%script(id="eventListTemplate" type="text/x-handlebars-template")
+	%a(data-rel="dialog" href="#")
+		%strong
+			{{title}}
+	%p(style="padding-left: 15px;")
+		date and time:
+		{{date}}
+	%p(style="padding-left: 15px;")
+		duration
+		{{duration}}
+		minutes
+
+-# Template for the events counter in headers.
+%script(id="eventCounterTemplate" type="text/x-handlebars-template")
+	{{length}}	Live Events

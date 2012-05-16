@@ -3,7 +3,7 @@
   
   %head
   
-    -# Standard mobile HTML meta
+    -# Standard mobile HTML meta.
     %meta(charset="utf-8")
     %meta(content="IE=edge,chrome=1" http-equiv="X-UA-Compatible")
     %meta(name="viewport" content="width=device-width, user-scalable=0, initial-scale=1.0, maximum-scale=1.0;")
@@ -13,176 +13,59 @@
     -# %meta (name="apple-mobile-web-app-capable" content="yes")
     -# %meta (name="apple-mobile-web-app-status-bar-style" content="black")
 
-    -# Include jQuery, SimpleDialog2 & Google Map libraries
-    %link(rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css")
-    %link(rel="stylesheet" href="http://dev.jtsage.com/cdn/simpledialog/latest/jquery.mobile.simpledialog.min.css")
-    %script(type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js")
-    %script(type="text/javascript" src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js")
+    -# jQuery, SimpleDialog2 & Google Map libraries.
+    %link(rel="stylesheet" href="jquery.mobile-1.1.0.min.css")
+    %link(rel="stylesheet" href="jquery.mobile.simpledialog.min.css")
+    %script(type="text/javascript" src="jquery-1.7.2.min.js")
+    %script(type="text/javascript" src="jquery.mobile-1.1.0.min.js")
     %script(type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true")
-    %script(type="text/javascript" src="http://dev.jtsage.com/cdn/simpledialog/latest/jquery.mobile.simpledialog2.min.js")
+    %script(type="text/javascript" src="jquery.mobile.simpledialog2.min.js")
 
-    %script(type="text/javascript" src="../public/handlebars-1.0.0.beta.6.js")
-    %script(type="text/javascript" src="../public/underscore.js")
-    %script(type="text/javascript" src="../public/json2.js")
-    %script(type="text/javascript" src="../public/backbone.js")
+    -# MVC, templating and data manipulation libraries.
+    %script(type="text/javascript" src="handlebars-1.0.0.beta.6.js")
+    %script(type="text/javascript" src="underscore.js")
+    %script(type="text/javascript" src="json2.js")
+    %script(type="text/javascript" src="backbone.js")
 
     -# Include custom scripts (static files are served from the ./public folder).
+    %script(type="text/javascript" src="mvc.js")
     %script(type="text/javascript" src="mapping.js")
     %script(type="text/javascript" src="dialog.js")
 
-    -# App name
+    -# App name.
     %title Live Now!	
 
-    -# Custom icon for "current position" header icon
+    -# Custom icon for "current position" header.
     :css
       .ui-icon-myapp-maptarget {
       background-image: url("maptarget.png");
       }
 
-    :javascript
-      var Templates = {};
-      var events;
-      
-      var Event = Backbone.Model.extend ({
-      });
+    = haml :templates
 
-      var Events = Backbone.Collection.extend ({
-        model: Event,
-        url: '/events'
-      });
-            
-      $(function() {
-        //Load the templates and store them in a global variable
-        $('script[type="text/x-handlebars-template"]').each(function () {
-          Templates[this.id] = Handlebars.compile($(this).html());
-        });
-        
 
-        //View for rendering one entry of the blog
-        var ItemView = Backbone.View.extend ({
-          tagName: "li",
-          events: {
-            "blur [contenteditable]": "saveValues"
-          },
-          initialize: function() {
-            this.model.bind('change', this.render, this);
-            this.template = Templates.event;
-          },
-          render: function() {
-            $(this.el).html( this.template(this.model.toJSON()) );
-            return this;
-          },
-          saveValues: function() {
-            this.model.save({
-              title: this.$("[data-name='title']").html(),
-              date: this.$("[data-name='date']").html(),
-              duration: this.$("[data-name='duration']").html()
-            },{silent: true});
-          }
-        });
-
-        //View for rendering the list of entries
-        var ListView = Backbone.View.extend ({
-          el: $("#eventsList"),
-          events: {
-          },
-          initialize: function() {
-            this.collection.bind('reset', this.render, this);
-            this.collection.bind('all', this.render, this);
-          },
-          render: function() {
-            var el = this.$el;
-            el.empty();
-            this.collection.each(function(item) {
-              var itemView = new ItemView({model: item});
-              el.append(itemView.render().el);
-            });
-            this.$el.listview('refresh');
-            return this;
-          },
-        });
-        
-        //View for creating a new entry
-        var NewView = Backbone.View.extend({
-          el: $("#newEvent"),
-          events: {
-            "click #eventEntry": "createNew"
-          },
-          initialize: function() {
-            this.title = this.$("#title");
-            this.date = this.$("#date");
-            this.duration = this.$("#duration");
-            
-          },
-          createNew: function() {
-            this.$(".invalid").removeClass("invalid");
-            if (this.$(":invalid").length) {
-              this.$(":invalid").addClass("invalid");
-              return false;
-            }
-            this.collection.create({
-              title: this.title.val(),
-              date: this.date.val(),
-              duration: this.duration.val()
-              //email: localStorage.email,
-              //name: localStorage.name
-            }, {at: 0});
-            this.title.val("");
-            this.date.val("");
-            this.duration.val("");
-          }
-        });
-
-        //Trigger an update of the tasks collection
-        //$("#refresh").live('click',function () {
-        //  events.fetch();
-        //});
-        
-        //Instantiate the collection of articles
-        events = new Events();
-
-        //Instantiate the views
-        var listView = new ListView({collection: events});
-        var newView = new NewView({collection: events});
-        
-        //Fetch the latest tasks and trigger an update of the views
-        events.fetch();
-      })
 
   %body(style="background: black;")
 
     -# Home page (with map)
     %div(id="main" data-role="page")      
       %header(id="header" data-role="header")
-        %h1 #{@locationCount} Events Live
-        %a(href="#listEvents" data-icon="grid") List
+        %h1(id="eventCounter")
+        -# {{Template-generated content here}}
+        %a(href="#secondaryView" data-icon="grid") List
         %a(id="locateMe" href="#" data-icon="myapp-maptarget" data-iconpos="notext")
       %div(id="content" class="content" data-role="content" style="padding-left: 0px; padding-right: 0px; padding-bottom: 0px; padding-top: 0px;")
-        -# Store the JSON string in hidden div for access by JavaScript.
-        %locationsDiv#jsonLoc{:style => "display:none"} #{@rawLocationData}
-        -# Create the map div.
+        -# Initialization of div for map display.
         #map(width="100%" height="auto")
       
-    = haml :templates
-
     -# List of events
-    %div(id="listEvents" data-role="page" data-add-back-btn="true")
+    %div(id="secondaryView" data-role="page" data-add-back-btn="true")
       %header(data-role="header")
-        %h1 #{@locationCount} Events Live
+        %h1(id="eventCounter")
+        -# {{Template-generated content here}}
       %div(class="code2" data-role="content")
-        %ul(data-role="listview")
-          -# The following code (and more) should be replaced once we deploy backbone.js.
-          - @events.each do |ev|
-            %li
-              %a(data-rel="dialog" id="openEditEventDialog" href="#")
-                %strong
-                  =ev[:title]
-              %p(style="padding-left: 15px;") 
-                date and time:
-                =ev[:date]
-              %p(style="padding-left: 15px;")
-                duration
-                =ev[:duration]
-                minutes
+        %ul(id="eventList" data-role="listview")
+        -# {{Template-generated content here}}
+
         
 

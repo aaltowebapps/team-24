@@ -2,6 +2,7 @@ var map;
 var currentLatLng;
 
 
+
 // The following function adds a pin to the map.
 function placeMarker(loc, isCurrentPos) {
     // The isCurrentPos argument is a boolean value indicating if the new pin represents the current position.

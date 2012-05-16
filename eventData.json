@@ -1,45 +1,45 @@
-{"locations" : [
-	{	"locName" : "Aaltoes",
+{"events" : [
+	{	"title" : "Aaltoes",
 		"lat" : 60.1804469,
 		"lng" : 24.8315503
 	},
 	
-	{	"locName" : "Dummy1",
+	{	"title" : "Dummy1",
 		"lat" : 60.1750951,
 		"lng" : 24.8038318
 	},
 	
-	{	"locName" : "Dummy2",
+	{	"title" : "Dummy2",
 		"lat" : 60.1783955,
 		"lng" : 24.7948513
 	},
 	
-	{	"locName" : "Dummy3",
+	{	"title" : "Dummy3",
 		"lat" : 60.1785925,
 		"lng" : 24.7981381
 	},
 
-	{	"locName" : "Dummy4",
+	{	"title" : "Dummy4",
 		"lat" : 60.1754239,
 		"lng" : 24.8012905
 	},
 	
-	{	"locName" : "Dummy5",
+	{	"title" : "Dummy5",
 		"lat" : 60.1757355,
 		"lng" : 24.8034435
 	},
 	
-	{	"locName" : "Dummy6",
+	{	"title" : "Dummy6",
 		"lat" : 60.1739132,
 		"lng" : 24.8019269
 	},
 	
-	{	"locName" : "Dummy7",
+	{	"title" : "Dummy7",
 		"lat" : 60.1759462,
 		"lng" : 24.8049867
 	},
 	
-	{	"locName" : "Dummy3",
+	{	"title" : "Dummy3",
 		"lat" : 60.1660421,
 		"lng" : 24.9009635
 	}
