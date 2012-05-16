@@ -50,7 +50,7 @@
     -# Home page (with map)
     %div(id="main" data-role="page")      
       %header(id="header" data-role="header")
-        %h1(id="eventCounter")
+        %h1(id="eventCounter1")
         -# {{Template-generated content here}}
         %a(href="#secondaryView" data-icon="grid") List
         %a(id="locateMe" href="#" data-icon="myapp-maptarget" data-iconpos="notext")
@@ -61,9 +61,9 @@
     -# List of events
     %div(id="secondaryView" data-role="page" data-add-back-btn="true")
       %header(data-role="header")
-        %h1(id="eventCounter")
+        %h1(id="eventCounter2")
         -# {{Template-generated content here}}
-      %div(class="code2" data-role="content")
+      %div(id="eventListContainer" class="code2" data-role="content")
         %ul(id="eventList" data-role="listview")
         -# {{Template-generated content here}}
 

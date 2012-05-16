@@ -26,10 +26,11 @@ $(function() {
 	var EventView = Backbone.View.extend ({
 		tagName: "li",
 		initialize: function() {
-			this.model.bind('change', this.render, this);
+			this.model.on('change', this.render, this);
 			this.template = Templates.eventListTemplate;
 		},
 		render: function() {
+			console.log("---- The list item renderer is now running");
 			$(this.el).html(this.template(this.model.toJSON()));
 			return this;
 		}
@@ -45,20 +46,22 @@ $(function() {
 			this.collection.on('all', this.render, this);
 		},
 		render: function() {
-			var el = this.$el;
-			el.empty();
+			console.log("++++ The listview renderer is now running");
+			var thisEl = this.$el;
+			thisEl.empty();
 			this.collection.each(function(item) {
 				var eventView = new EventView({model: item});
-				el.append(eventView.render().el);	// Note that el refers to different elements in each case.
+				thisEl.append(eventView.render().el);
 			});
-			this.$el.listview('refresh');
+			if ($("#eventList").hasClass('ui-listview')) {		// Without this, this ver of jQuery throws an exception here. Details available on request :-)
+				$("#eventList").listview('refresh');		// jQuery listview not refreshed automatically when its html is changed.
+			}
 			return this;
 		}
 	});
 
 	// View for updating the event counter in the header.
 	var EventCounterView = Backbone.View.extend({
-		el: $("#eventCounter"),
 		events: {
 		},
 		initialize: function() {
@@ -68,7 +71,8 @@ $(function() {
 		},
 		render: function() {
 			console.log("**** The counter renderer is now running");
-			$(this.el).html(this.template(this.collection.toJSON()));
+			$("#eventCounter1").html(this.template(this.collection.toJSON()));
+			$("#eventCounter2").html(this.template(this.collection.toJSON()));
 		}
 	});
 	
@@ -111,7 +115,7 @@ $(function() {
 	events = new Events();
 
 	//Instantiate the views
-	// var listView = new ListView({collection: events});
+	var listView = new ListView({collection: events});
 	var eventCounterView = new EventCounterView({collection: events});
 
 	//Fetch the latest tasks and trigger an update of the views
