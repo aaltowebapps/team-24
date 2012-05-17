@@ -16,15 +16,30 @@ displayDialog = function() {
     blankContent: "<div class='content' style='margin-left=10px;' data-role='content'>"+
                     "<form action='/newEvent' method='post'>"+
                       "<label for='title' style='margin-left:7px; padding-top: 10px;'>Name / title:</label>"+
-                        "<input id='title' style='max-width:260px;margin-left: 5px;width: 255px' name='title' data-mini='true' type='text' required='required'/>"+
-                      "<label for='startingDate' style='margin-left:7px; padding-top: 10px;'>Starting date and time:</label>"+
-                        "<input id='startingDate' style='max-width:260px; margin-left: 5px; width: 255px' name='startingDate' type='datetime'/>"+
+                        "<input id='title' style='max-width:260px;margin-left: 5px;width: 255px' name='title' data-mini='true' type='text' autofocus = 'autofocus' required='required'/>"+
+                    "<table>"+
+                          "<tr style='margin-left: 5px; width: 120px'>"+
+                              "<td>Starting date:</td>"+
+                              "<td>and time:</td>"+
+                          "</tr>"+
+                          "<tr>"+
+                              "<td>"+
+                                  "<input id='startingDate' style='margin-left: 5px; width: 120px' name='startingDate' type='date'/>"+
+                              "</td>"+
+                              "<td>"+
+                                  "<input id='startingTime' style='margin-left: 5px; width: 100px' name='startingTime' type='time'/>"+
+                              "</td>"+
+                          "</tr>"+
+                      "</table>"+
                       "<label for='duration' style='margin-left: 7px;padding-top: 10px;'>Duration: </label>"+
                         "<input id='duration' style='margin-left: 5px' max='300' min='1' type='range' data-mini='true' value='5' />"+
                       "<button id='postEntry' type='submit' data-mini='true'>Add</button>"+
                       "<button id='deleteEntry' type='button' data-theme='e' data-mini='true'>Delete</button></form></div>",
+    callbackOpen: function() {
+        $( "#startingDate" ).datepicker();
+    },
     callbackOpenArgs: function() {
-    
+
     },
     callbackCloseArgs: function() {
     
