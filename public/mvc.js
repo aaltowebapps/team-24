@@ -6,18 +6,19 @@ var events;
 var Event = Backbone.Model.extend ({
 	initialize: function() {
 		// Set an event handler to remove the pin when its event is deleted.
-		// From an MVC/design perspective, it would have been neater to embed the pin within the model.
-		// This would involve much higher bandwidth, however.
 		this.on('destroy', function() {
 			// We find the pin whose id matches that of the event.
 			for (var i = 0; i <= pins.length - 1; i++) {
 				if (pins[i].id == this.id) {
-					// The we remove the pin from the map...
-					pins[i].pin.setMap(null);
+					// Then we remove the pin from the map...
+					pins[i].setMap(null);
 					// ... and we remove it from the pins array, as well.
 					pins.splice(i,1);
 				}
 			}
+		});
+		this.on('change:longitude change:latitude', function() {
+			// When event coordinates change, the respective pin must be asked to move.
 		});
 	}
 });
@@ -25,6 +26,9 @@ var Event = Backbone.Model.extend ({
 
 
 var Events = Backbone.Collection.extend ({
+	initialize: function() {
+	// When an event has been added to the collection, assign a new pin to it.
+	},
 	model: Event,
 	url: '/events'
 });

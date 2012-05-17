@@ -17,35 +17,48 @@ function placeMarker(loc, isCurrentPos) {
 			markLocation = new google.maps.Marker({
 				position: loc,
 				draggable: true,
-				map: map});
+				map: map
+			});
     } else {
 			markLocation = new google.maps.Marker({
 				position: loc,
 				draggable: false,	// Current position not draggable.
 				map: map,
 				zIndex: 0,			// Current position should not obstruct view to event pins.
-				icon: "arrow.png"});
+				icon: "arrow.png"
+			});
 	}
 
 	if (!isCurrentPos) {
-		// Create (add & save) a model in the collection.
+		// Create (add & save) a model in the collection (sends a POST request to server).
 		var i = events.create({
 			'title' : 'My New Event',
 			'duration' : 60,
 			'longitude' : loc.lng(),
-			'latitude' : loc.lat()});
-		// Wait until the server's response to this POST request, which includes the ID of the new event,
-		// is received by the browser.
-		i.on('change', function() {
-			// Then create a hash to associate this ID with the newly created pin,
-			// and add append the hash to the pins array.
-			pins.push({'id':i['id'], 'pin':markLocation});
+			'latitude' : loc.lat()
 		});
-		console.log('pins: ', pins);
+		// Expect the server's response to this POST request, which includes the unique ID of the new event.
+		i.on('change:id', function() {
+			// Then create a hash to associate this ID with the newly created pin,
+			// and append the hash to the pins array.
+			markLocation['id'] = i['id'];
+			pins.push(markLocation);
+		});
+		// Handler for updating the coordinates of the event on dragging the pin.
+		google.maps.event.addListener(markLocation, 'dragend', function(event) {
+			console.log("Pin dragging handler fired! Event coordinates updated.");
+			// Find the model whose id matches the id of the pin.
+			for (var i = 0; i <= events.models.length - 1; i++) {
+				if (markLocation.id == events.at(i).get('id')) {
+					// Update the model with the new coordinates
+					events.at(i).set({'longitude':markLocation.getPosition().lng(), 'latitude':markLocation.getPosition().lat()});
+				}
+			}
+		});
 	}
 
     // Attach event listener to open modal dialog upon clicking on pin.
-    // But only do that for new events, not for the pin representing the current location.
+    // But do this for new event pins, not for the pin representing the current location.
     if (isCurrentPos === false) {
 			google.maps.event.addListener(markLocation, 'click', function() {
 				displayDialog();		// This is declared in dialog.js
@@ -55,7 +68,7 @@ function placeMarker(loc, isCurrentPos) {
     // Only center the map to the new pin if the pin is outside the map's current viewport.
     // (this is to done avoid a confusing "panning" of the viewport whenever the user taps on the map to create an event).
     if (!map.getBounds().contains(markLocation.getPosition())) map.setCenter(loc);
-    
+
 	// Return the created pin.
     return markLocation;
 }
@@ -116,7 +129,7 @@ $(function() {
 			}
         });
 		
-		// Handler to create pins on tap.
+		// Handler to create a pin/event.
 		google.maps.event.addListener(map, 'click', function(event) {
             placeMarker(event.latLng);
             displayDialog();
