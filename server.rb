@@ -63,7 +63,6 @@ get '/events/:id' do
     status 404
   else
     content_type :json
-    puts"     Server return event with id: {params[:id]}"
     $events[params[:id].to_i].to_json
   end
 end
@@ -71,7 +70,6 @@ end
 
 
 post '/events' do
-  puts "+ + + + + + Creating event with content: #{request.body.string}"
   data = JSON.parse(request.body.string)
   if data.nil?
     status 400
@@ -83,7 +81,7 @@ post '/events' do
     event[:timestamp] = timestamp
     event[:id] = $nextID; $nextID += 1
     $events.unshift(event)
-    puts "  Created event with content: #{event}"
+    puts "+ + + + + + Creating event with content: #{event}"
     event.to_json
   end
 end
@@ -103,7 +101,6 @@ put '/events/:id' do
     event[:timestamp] = timestamp
     event[:id] = params[:id].to_i
     # Replace the event in the list of events
-    puts "  Updated event with id: #{params[:id]}"
     $events[event[:id].to_i].merge!(event)
   end
 end
@@ -111,11 +108,10 @@ end
 
 
 delete '/events/:id' do
-  puts  "Deleting event with id: #{params[:id]}"
+  puts  "o o o o o o Deleting event with id: #{params[:id]}"
   if params[:id].to_i > $events.length
     status 404
   else
-    puts "  Deleted event with id: #{params[:id]}"
     $events.delete_at(params[:id].to_i)
   end
 end
