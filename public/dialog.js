@@ -17,7 +17,7 @@ displayDialog = function() {
                     "<form action='/newEvent' method='post'>"+
                       "<label for='title' style='margin-left:7px; padding-top: 10px;'>Name / title:</label>"+
                         "<input id='title' style='max-width:260px;margin-left: 5px;width: 255px' name='title' data-mini='true' type='text' autofocus = 'autofocus' required='required'/>"+
-                    "<table>"+
+                      "<table>"+
                           "<tr style='margin-left: 5px; width: 120px'>"+
                               "<td>Starting date:</td>"+
                               "<td>and time:</td>"+
@@ -36,7 +36,8 @@ displayDialog = function() {
                       "<button id='postEntry' type='submit' data-mini='true'>Add</button>"+
                       "<button id='deleteEntry' type='button' data-theme='e' data-mini='true'>Delete</button></form></div>",
     callbackOpen: function() {
-        $( "#startingDate" ).datepicker();
+        //$( "#startingDate" ).datepicker();
+        //$( "#startingTime" ).timePicker();
     },
     callbackOpenArgs: function() {
 
