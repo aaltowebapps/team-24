@@ -1,7 +1,6 @@
-var map;
-var pins = [];			// Associative area contains all pins.
-var currentLatLng;		// Google API LatLng object for the current position of the device.
-
+var map;				// The map.
+var pins = [];			// Associative array containing all pins.
+var currentLatLng;		// Google LatLng object for the current position.
 
 
 // The following function adds a pin to the map at the location loc.
@@ -29,22 +28,8 @@ function placeMarker(loc, isCurrentPos) {
 			});
 	}
 
+	// Handler for updating the coordinates of the event on dragging the pin.
 	if (!isCurrentPos) {
-		// Create (add & save) a model in the collection (sends a POST request to server).
-		var i = events.create({
-			'title' : 'My New Event',
-			'duration' : 60,
-			'longitude' : loc.lng(),
-			'latitude' : loc.lat()
-		});
-		// Expect the server's response to this POST request, which includes the unique ID of the new event.
-		i.on('change:id', function() {
-			// Then create a hash to associate this ID with the newly created pin,
-			// and append the hash to the pins array.
-			markLocation['id'] = i['id'];
-			pins.push(markLocation);
-		});
-		// Handler for updating the coordinates of the event on dragging the pin.
 		google.maps.event.addListener(markLocation, 'dragend', function(event) {
 			console.log("Pin dragging handler fired! Event coordinates updated.");
 			// Find the model whose id matches the id of the pin.
@@ -52,6 +37,7 @@ function placeMarker(loc, isCurrentPos) {
 				if (markLocation.id == events.at(i).get('id')) {
 					// Update the model with the new coordinates
 					events.at(i).set({'longitude':markLocation.getPosition().lng(), 'latitude':markLocation.getPosition().lat()});
+					events.at(i).save();
 				}
 			}
 		});
@@ -85,9 +71,6 @@ $(function() {
 
 
 $(function() {
-	var currentPosMarker;
-	var mapOptions;
-		
 	// Hide address bar and adjust map div dimensions according to the device at hand.
 	// This needs to be done after every device rotation (i.e. window size change).
 	function resetMapDivDimensions() {
@@ -96,11 +79,11 @@ $(function() {
 		$("#map").height(mapViewportHeight);
 	}
 
-	// Get current position from geolocation API on app startup, and initialize mapping functions.
+	// Initialize map and mapping functions.
 	navigator.geolocation.getCurrentPosition(function(geodata) {
 		// Create current position object, set map options.
 		currentLatLng = new google.maps.LatLng(geodata.coords.latitude, geodata.coords.longitude);
-		mapOptions = {
+		var mapOptions = {
 			center: currentLatLng,
 			zoom: 14,
 			mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -110,46 +93,43 @@ $(function() {
 		
 		// Create appropriately sized div for the map.
 		resetMapDivDimensions();
-
+	
 		// Create map.
 		map = new google.maps.Map(document.getElementById("map"), mapOptions);
-	
-		// Parse JSON previously stored in invisible div.
-		var jsonLocationData = $.parseJSON($("#jsonLoc").html());
-
-		// Before event pins are added to the map, ensure that it has been fully loaded.
+		
+		// Before proceeding with mapping functions, ensure the map has been fully loaded.
 		google.maps.event.addListenerOnce(map, 'idle', function() {
 			// Pin current location onto map.
-			currentPosMarker = placeMarker(currentLatLng, true);
-			// Pin locations stored in database.
-			for (var i = 0; i < jsonLocationData.locations.length; i++) {
-				var tempLoc = jsonLocationData.locations[i];
-				var tempLatLng = new google.maps.LatLng(tempLoc.lat, tempLoc.lng);
-				placeMarker(tempLatLng);
-			}
+			var currentPosMarker = placeMarker(currentLatLng, true);
+			// Refresh the current location every 30 sec at most.
+			navigator.geolocation.watchPosition(
+				function(geodata) {
+					currentLatLng = new google.maps.LatLng(geodata.coords.latitude, geodata.coords.longitude);
+					currentPosMarker.setPosition(currentLatLng);
+				},
+				function() {},
+				{enableHighAccuracy:true, maximumAge:30000, timeout:5000}
+			);
+			// Create an event by tapping on the map.
+			google.maps.event.addListener(map, 'click', function(event) {
+				// Create (add & save) a model in the collection (sends a POST request to server).
+				var i = events.create({
+					'title'		: 'My New Event',
+					'duration'	: 60,
+					'longitude' : event.latLng.lng(),
+					'latitude'	: event.latLng.lat()
+				});
+				displayDialog();
+			});
+			//Fetch the latest tasks and trigger an update of the views
+			events.fetch();
         });
 		
-		// Handler to create a pin/event.
-		google.maps.event.addListener(map, 'click', function(event) {
-            placeMarker(event.latLng);
-            displayDialog();
-        });
-
-		// On the mobile, window is resized when the device is rotated.
+		// On the mobile, the window is resized when the device is rotated.
 		// In those cases, we resize the div accordingly and trigger a resize event for the map.
 		$(window).resize(function (){
-			resetMapDivDimensions();		// Resize the div in which the map is locate.
+			resetMapDivDimensions();						// Resize the div in which the map is locate.
 			google.maps.event.trigger(map, 'resize');		// Resize the map to fully occupy its div.
 		});
 	});
-	
-	// Refresh the current location coordinates and pin every 30 sec at most.
-	navigator.geolocation.watchPosition(
-		function(geodata) {
-			currentLatLng = new google.maps.LatLng(geodata.coords.latitude, geodata.coords.longitude);
-			currentPosMarker.setPosition(currentLatLng);
-		},
-		function() {},
-		{enableHighAccuracy:true, maximumAge:30000, timeout:5000}
-	);
 });

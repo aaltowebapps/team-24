@@ -5,6 +5,15 @@ var events;
 
 var Event = Backbone.Model.extend ({
 	initialize: function() {
+		// When an event has been added to the collection, assign a new pin to it.
+		this.on('change:id', function() {
+			// Create pin.
+			var p = placeMarker(new google.maps.LatLng(this.get('latitude'), this.get('longitude')));
+			// Associate the model ID with the pin ID...
+			p['id'] = this.id;
+			//... and append the pin to the pins array.
+			pins.push(p);
+		});
 		// The pin must excuse itself when its event is deleted.
 		this.on('destroy', function() {
 			// We find the pin whose id matches that of the event.
@@ -34,17 +43,27 @@ var Event = Backbone.Model.extend ({
 
 
 var Events = Backbone.Collection.extend ({
-	initialize: function() {
-	// When an event has been added to the collection, assign a new pin to it.
-	},
 	model: Event,
-	url: '/events'
+	url: '/events',
+	initialize: function() {
+		// When the app is launched and data fetched, populated the client with preexisting pins.
+		this.on('reset', function() {
+			for (var i = 0; i <= this.models.length - 1; i+=1) {
+				console.log('current model = ', this.at(i));
+				// Create pin.
+				var p = placeMarker(new google.maps.LatLng(this.at(i).get('latitude'), this.at(i).get('longitude')));
+				// Associate the model ID with the pin ID...
+				p['id'] = this.at(i).id;
+				//... and append the pin to the pins array.
+				pins.push(p);
+			}
+		});
+	}
 });
 
 
 		
 $(function() {
-
 	// Compile the templates using Handlebars.js and store them in the Templates[] global variable.
 	$('script[type="text/x-handlebars-template"]').each(function () {
 		Templates[this.id] = Handlebars.compile($(this).html());
@@ -58,13 +77,11 @@ $(function() {
 			this.template = Templates.eventListTemplate;
 		},
 		render: function() {
-			console.log("---- The list item renderer is now running");
+			// console.log("---- The list item renderer is now running");
 			$(this.el).html(this.template(this.model.toJSON()));
 			return this;
 		}
 	});
-
-
 
 	//View for rendering the list of events.
 	var ListView = Backbone.View.extend ({
@@ -76,7 +93,7 @@ $(function() {
 			this.collection.on('all', this.render, this);
 		},
 		render: function() {
-			console.log("++++ The listview renderer is now running");
+			// console.log("++++ The listview renderer is now running");
 			var thisEl = this.$el;
 			thisEl.empty();
 			this.collection.each(function(item) {
@@ -100,25 +117,18 @@ $(function() {
 			this.collection.on('all', this.render, this);
 		},
 		render: function() {
-			console.log("**** The counter renderer is now running");
+			// console.log("**** The counter renderer is now running");
 			$("#eventCounter1").html(this.template(this.collection.toJSON()));
 			$("#eventCounter2").html(this.template(this.collection.toJSON()));
 		}
 	});
 
-	//Trigger an update of the tasks collection
+	// Manually trigger an update of the tasks collection
 	//$("#refresh").live('click',function () {
 	//  events.fetch();
 	//});
 
-	//Instantiate the collection of articles
-	events = new Events();
-
-	//Instantiate the views
-	var listView = new ListView({collection: events});
+	events = new Events();	// Backbone.js Collection of events.
+	var listView = new ListView({collection: events});	// Backbone.js views.
 	var eventCounterView = new EventCounterView({collection: events});
-
-	//Fetch the latest tasks and trigger an update of the views
-	events.fetch();
-
 });

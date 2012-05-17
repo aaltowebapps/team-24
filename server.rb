@@ -3,7 +3,6 @@ require 'haml'
 require 'json'
 
 
-
 set :port, 5678
 
 
@@ -50,7 +49,8 @@ end
 
 get '/events' do
   content_type :json
-  puts "====== EVENTS LIST ======"
+  puts "\n\n====== FETCHING DATABASE ======"
+  puts ">>> Events list:"
   puts $events
   $events.to_json
 end
@@ -58,11 +58,14 @@ end
 
 
 get '/events/:id' do
-  puts "/ / / / / / Requesting event with id: #{params[:id]}"
-  if params[:id].to_i > $events.length
+  puts "\n\n====== SERVING EVENT WITH ID: #{params[:id]} ======"
+  # @ev = $events.select {|e| e[:id] == params[:id].to_i}
+  if $events[params[:id].to_i] == nil
     status 404
   else
     content_type :json
+    puts "> > > Events list:"
+    puts $events
     $events[params[:id].to_i].to_json
   end
 end
@@ -79,9 +82,12 @@ post '/events' do
       event[field] = data[field.to_s] || ""
     end
     event[:timestamp] = timestamp
-    event[:id] = $nextID; $nextID += 1
-    $events.unshift(event)
-    puts "+ + + + + + Creating event with content: #{event}"
+    event[:id] = $nextID
+    $events[event[:id].to_i] = event
+    puts "\n\n====== CREATING EVENT WITH ID: #{$nextID} ======"
+    puts "> > > Events list:"
+    puts $events
+    $nextID += 1
     event.to_json
   end
 end
@@ -89,29 +95,34 @@ end
 
 
 put '/events/:id' do
-  puts "> > > > > > Updating event with id: #{params[:id]}"
+  puts "\n\n====== UPDATING EVENT WITH ID: #{params[:id]} ======"
   data = JSON.parse(request.body.string)
   if data.nil?
     status 400
   else
     event = {}
-    [:title, :duration, :latitude, :longitude, :date].each do |field|
+    [:title, :duration, :latitude, :longitude, :date, :id].each do |field|
       event[field] = data[field.to_s] || ""
     end
     event[:timestamp] = timestamp
-    event[:id] = params[:id].to_i
     # Replace the event in the list of events
-    $events[event[:id].to_i].merge!(event)
+    $events[event[:id].to_i] = event
+    e = $events[event[:id].to_i]
+    puts "> > > Events list:"
+    puts $events
+    e.to_json
   end
 end
 
 
 
 delete '/events/:id' do
-  puts  "o o o o o o Deleting event with id: #{params[:id]}"
-  if params[:id].to_i > $events.length
+  puts  "\n\n====== DELETING EVENT WITH ID: #{params[:id]} ======"
+  if $events[params[:id].to_i] == nil
     status 404
   else
-    $events.delete_at(params[:id].to_i)
+    $events[params[:id].to_i] = nil
+    puts "> > > Events list:"
+    puts $events
   end
 end
