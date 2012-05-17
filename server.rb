@@ -50,7 +50,7 @@ end
 get '/events' do
   content_type :json
   puts "\n\n====== FETCHING DATABASE ======"
-  puts ">>> Events list:"
+  puts "> > > Events list:"
   puts $events
   $events.to_json
 end
@@ -59,14 +59,14 @@ end
 
 get '/events/:id' do
   puts "\n\n====== SERVING EVENT WITH ID: #{params[:id]} ======"
-  # @ev = $events.select {|e| e[:id] == params[:id].to_i}
-  if $events[params[:id].to_i] == nil
+  @ev = $events.select {|e| e[:id] == params[:id].to_i}
+  if @ev == nil
     status 404
   else
     content_type :json
     puts "> > > Events list:"
     puts $events
-    $events[params[:id].to_i].to_json
+    @ev[0].to_json
   end
 end
 
@@ -83,7 +83,7 @@ post '/events' do
     end
     event[:timestamp] = timestamp
     event[:id] = $nextID
-    $events[event[:id].to_i] = event
+    $events.unshift(event)
     puts "\n\n====== CREATING EVENT WITH ID: #{$nextID} ======"
     puts "> > > Events list:"
     puts $events
@@ -101,16 +101,17 @@ put '/events/:id' do
     status 400
   else
     event = {}
-    [:title, :duration, :latitude, :longitude, :date, :id].each do |field|
+    [:title, :duration, :latitude, :longitude, :date].each do |field|
       event[field] = data[field.to_s] || ""
     end
     event[:timestamp] = timestamp
+    event[:id] = data[:id.to_s]
     # Replace the event in the list of events
-    $events[event[:id].to_i] = event
-    e = $events[event[:id].to_i]
+    @ev = $events.select {|e| e[:id] == params[:id].to_i}
+    $events.delete(@ev[0])
+    $events.unshift(event)
     puts "> > > Events list:"
     puts $events
-    e.to_json
   end
 end
 
@@ -118,10 +119,11 @@ end
 
 delete '/events/:id' do
   puts  "\n\n====== DELETING EVENT WITH ID: #{params[:id]} ======"
-  if $events[params[:id].to_i] == nil
+  @ev = $events.select {|e| e[:id] == params[:id].to_i}
+  if @ev == nil
     status 404
   else
-    $events[params[:id].to_i] = nil
+    $events.delete(@ev[0])
     puts "> > > Events list:"
     puts $events
   end
