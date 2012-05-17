@@ -5,7 +5,7 @@ var events;
 
 var Event = Backbone.Model.extend ({
 	initialize: function() {
-		// Set an event handler to remove the pin when its event is deleted.
+		// The pin must excuse itself when its event is deleted.
 		this.on('destroy', function() {
 			// We find the pin whose id matches that of the event.
 			for (var i = 0; i <= pins.length - 1; i++) {
@@ -17,8 +17,16 @@ var Event = Backbone.Model.extend ({
 				}
 			}
 		});
+		// When event coordinates change, the respective pin must be asked to move accordingly.
 		this.on('change:longitude change:latitude', function() {
-			// When event coordinates change, the respective pin must be asked to move.
+			// We find the pin whose id matches that of the event.
+			for (var i = 0; i <= pins.length - 1; i++) {
+				if (pins[i].id == this.id) {
+					// Then we move the pin accordingly.
+					var newPosition = new google.maps.LatLng(this.get('latitude'), this.get('longitude'));
+					pins[i].setPosition(newPosition);
+				}
+			}
 		});
 	}
 });
@@ -97,36 +105,6 @@ $(function() {
 			$("#eventCounter2").html(this.template(this.collection.toJSON()));
 		}
 	});
-	
-	// //View for creating a new entry
-	// var NewView = Backbone.View.extend({
-	// 	el: $("#newEvent"),
-	// 	events: {
-	// 		"click #eventEntry": "createNew"
-	// 	},
-	// 	initialize: function() {
-	// 		this.title = this.$("#title");
-	// 		this.date = this.$("#date");
-	// 		this.duration = this.$("#duration");
-	// 	},
-	// 	createNew: function() {
-	// 		this.$(".invalid").removeClass("invalid");
-	// 		if (this.$(":invalid").length) {
-	// 			this.$(":invalid").addClass("invalid");
-	// 			return false;
-	// 		}
-	// 		this.collection.create({
-	// 			title: this.title.val(),
-	// 			date: this.date.val(),
-	// 			duration: this.duration.val()
-	// 			//email: localStorage.email,
-	// 			//name: localStorage.name
-	// 		}, {at: 0});
-	// 		this.title.val("");
-	// 		this.date.val("");
-	// 		this.duration.val("");
-	// 	}
-	// });
 
 	//Trigger an update of the tasks collection
 	//$("#refresh").live('click',function () {
