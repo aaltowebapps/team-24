@@ -30,7 +30,7 @@ end
 
 
 $events = Array.new
-$nextID = 0;
+$nextID = -1;
 
 
 
@@ -84,6 +84,15 @@ end
 
 
 
+get '/nextid' do
+  content_type 'application/json'
+  $nextID += 1
+  puts "\n\n====== GENERATED ID: ", $nextID.to_json, "======"
+  $nextID.to_json
+end
+
+
+
 post '/events' do
   data = JSON.parse(request.body.string)
   if data.nil?
@@ -94,12 +103,11 @@ post '/events' do
       event[field] = data[field.to_s] || ""
     end
     event[:timestamp] = timestamp
-    event[:id] = $nextID
+    event[:id] = data[:id]
     $events.unshift(event)
-    puts "\n\n====== CREATING EVENT WITH ID: #{$nextID} ======"
+    puts "\n\n====== CREATING EVENT WITH ID: #{event[:id]} ======"
     puts "> > > Events list:"
     puts $events
-    $nextID += 1
     Pusher['livenow'].trigger('posted', event.to_json, request.env["HTTP_X_PUSHER_SOCKET_ID"])
     event.to_json
   end
@@ -125,7 +133,7 @@ put '/events/:id' do
     $events.unshift(event)
     puts "> > > Events list:"
     puts $events
-    Pusher['livenow'].trigger('put', event.to_json, request.env["HTTP_X_PUSHER_SOCKET_ID"])
+    Pusher['livenow'].trigger('put', params[:id].to_i, request.env["HTTP_X_PUSHER_SOCKET_ID"])
     event.to_json
   end
 end

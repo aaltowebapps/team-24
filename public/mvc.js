@@ -6,7 +6,7 @@ var events;
 var Event = Backbone.Model.extend ({
 	initialize: function() {
 		// When an event has been added to the collection, assign a new pin to it.
-		this.on('change:id', function() {
+		this.on('add', function(e) {
 			// Create pin.
 			var p = placeMarker(new google.maps.LatLng(this.get('latitude'), this.get('longitude')));
 			// Associate the model ID with the pin ID...
@@ -15,7 +15,7 @@ var Event = Backbone.Model.extend ({
 			pins.push(p);
 		});
 		// The pin must excuse itself when its event is deleted.
-		this.on('remove', function() {
+		this.on('destroy', function() {
 			// We find the pin whose id matches that of the event.
 			for (var i = 0; i <= pins.length - 1; i++) {
 				if (pins[i].id == this.id) {
@@ -28,10 +28,12 @@ var Event = Backbone.Model.extend ({
 		});
 		// When event coordinates change, the respective pin must be asked to move accordingly.
 		this.on('change:longitude change:latitude', function() {
+			console.log('Now deep in the move pin listener!');
 			// We find the pin whose id matches that of the event.
 			for (var i = 0; i <= pins.length - 1; i++) {
 				if (pins[i].id == this.id) {
 					// Then we move the pin accordingly.
+					console.log('Pin id# matching the event', pins[i].id);
 					var newPosition = new google.maps.LatLng(this.get('latitude'), this.get('longitude'));
 					pins[i].setPosition(newPosition);
 				}
@@ -48,13 +50,20 @@ var Events = Backbone.Collection.extend ({
 	initialize: function() {
 		// When the app is launched and data fetched, populated the client with preexisting pins.
 		this.on('reset', function() {
-			for (var i = 0; i <= this.models.length - 1; i+=1) {
+			// First efface all pins.
+			for (var i = 0; i < pins.length; i++) {
+				pins[i].setMap(null);
+			}
+			pins.length = 0;
+			console.log('======');
+			// Then replace the pins based on fresh data from the models.
+			for (var j = 0; j <= this.models.length - 1; j++) {
 				// Create pin.
-				var p = placeMarker(new google.maps.LatLng(this.at(i).get('latitude'), this.at(i).get('longitude')));
+				var p = placeMarker(new google.maps.LatLng(this.at(j).get('latitude'), this.at(j).get('longitude')));
 				// Associate the model ID with the pin ID...
-				p['id'] = this.at(i).id;
+				p['id'] = this.at(j).id; console.log(' p.id = ', p['id'], '   this.at(j).id = ', this.at(j).id);
 				//... and append the pin to the pins array.
-				pins.push(p);
+				pins.push(p); console.log(pins);
 			}
 		});
 	}

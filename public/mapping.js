@@ -111,14 +111,22 @@ $(function() {
 			);
 			// Create an event by tapping on the map.
 			google.maps.event.addListener(map, 'click', function(event) {
-				// Create (add & save) a model in the collection (sends a POST request to server).
-				var i = events.create({
-					'title'		: 'My New Event',
-					'duration'	: 60,
-					'longitude' : event.latLng.lng(),
-					'latitude'	: event.latLng.lat()
-				});
-				displayDialog();
+				// We need a unique, server-generated ID for the new event, to avoid data corruption.
+				console.log('... Sent AJAX request for new ID, waiting for response ...');
+				$.get('/nextid',
+						function(nextID) {
+							console.log('Got it! The new ID is', nextID);
+							// Create (add & save) a model in the collection (sends a POST request to server).
+							var i = events.create({
+								'title'		: 'My New Event',
+								'duration'	: 60,
+								'longitude' : event.latLng.lng(),
+								'latitude'	: event.latLng.lat(),
+								'id'		: nextID
+							});
+							displayDialog();
+						}
+				);
 			});
 
 			// Initialize Pusher.
@@ -137,16 +145,32 @@ $(function() {
 			events.fetch();
 
 			// Setup the Pusher event handlers.
-			channel.bind('posted', function() {
-				console.log("<<< 'Posted' callback >>>");
+			channel.bind('posted', function(m) {
+				console.log("<<< 'Posted' >>>", m);
+				// events.create(m);
+				events.fetch();
 			});
 
-			channel.bind('put', function() {
-				console.log("<<< 'Put' callback >>>");
+			channel.bind('put', function(i) {
+				console.log("<<< 'Put' # >>>", i);
+				// var e = events.where({id : i});	Unfortunately not available even though it appears in docs.
+				// for (var k = 0; k < events.models.length; k++) {
+				// 	e = events.at(k);
+				// 	if (e.get('id') == i) e.fetch();
+				// 	break;
+				// }
+				events.fetch();
 			});
 
-			channel.bind('deleted', function() {
-				console.log("<<< 'Deleted' callback >>>");
+			channel.bind('deleted', function(i) {
+				console.log("<<< 'Deleted' # >>>", i);
+				// var e = events.where({id : i});	Unfortunately not available even though it appears in docs.
+				// for (var k = 0; k < events.models.length; k++) {
+				// 	e = events.at(k);
+				// 	if (e.get('id') == i) e.destroy();
+				// 	break;
+				// }
+				events.fetch();
 			});
         });
 		
