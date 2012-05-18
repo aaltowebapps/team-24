@@ -121,8 +121,26 @@ $(function() {
 				});
 				displayDialog();
 			});
+
+			// Initialize Pusher.
+			var pusher = new Pusher('428fa18abbaf98f5b0b6');
+			var channel = pusher.subscribe('livenow');
+
 			//Fetch the latest tasks and trigger an update of the views
 			events.fetch();
+
+			// Setup the Pusher event handlers.
+			channel.bind('posted', function() {
+				console.log("<<< 'Posted' callback >>>");
+			});
+
+			channel.bind('put', function() {
+				console.log("<<< 'Put' callback >>>");
+			});
+
+			channel.bind('deleted', function() {
+				console.log("<<< 'Deleted' callback >>>");
+			});
         });
 		
 		// On the mobile, the window is resized when the device is rotated.
