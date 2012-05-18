@@ -15,7 +15,7 @@ var Event = Backbone.Model.extend ({
 			pins.push(p);
 		});
 		// The pin must excuse itself when its event is deleted.
-		this.on('destroy', function() {
+		this.on('remove', function() {
 			// We find the pin whose id matches that of the event.
 			for (var i = 0; i <= pins.length - 1; i++) {
 				if (pins[i].id == this.id) {
@@ -49,7 +49,6 @@ var Events = Backbone.Collection.extend ({
 		// When the app is launched and data fetched, populated the client with preexisting pins.
 		this.on('reset', function() {
 			for (var i = 0; i <= this.models.length - 1; i+=1) {
-				console.log('current model = ', this.at(i));
 				// Create pin.
 				var p = placeMarker(new google.maps.LatLng(this.at(i).get('latitude'), this.at(i).get('longitude')));
 				// Associate the model ID with the pin ID...

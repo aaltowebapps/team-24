@@ -100,7 +100,7 @@ post '/events' do
     puts "> > > Events list:"
     puts $events
     $nextID += 1
-    Pusher['livenow'].trigger('posted', event.to_json)
+    Pusher['livenow'].trigger('posted', event.to_json, request.env["HTTP_X_PUSHER_SOCKET_ID"])
     event.to_json
   end
 end
@@ -125,7 +125,7 @@ put '/events/:id' do
     $events.unshift(event)
     puts "> > > Events list:"
     puts $events
-    Pusher['livenow'].trigger('put', event.to_json)
+    Pusher['livenow'].trigger('put', event.to_json, request.env["HTTP_X_PUSHER_SOCKET_ID"])
     event.to_json
   end
 end
@@ -141,7 +141,7 @@ delete '/events/:id' do
     $events.delete(@ev[0])
     puts "> > > Events list:"
     puts $events
-    Pusher['livenow'].trigger('deleted', params[:id].to_i)
+    Pusher['livenow'].trigger('deleted', params[:id].to_i, request.env["HTTP_X_PUSHER_SOCKET_ID"])
     params[:id].to_i
   end
 end

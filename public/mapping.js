@@ -31,7 +31,6 @@ function placeMarker(loc, isCurrentPos) {
 	// Handler for updating the coordinates of the event on dragging the pin.
 	if (!isCurrentPos) {
 		google.maps.event.addListener(markLocation, 'dragend', function(event) {
-			console.log("Pin dragging handler fired! Event coordinates updated.");
 			// Find the model whose id matches the id of the pin.
 			for (var i = 0; i <= events.models.length - 1; i++) {
 				if (markLocation.id == events.at(i).get('id')) {
@@ -125,6 +124,14 @@ $(function() {
 			// Initialize Pusher.
 			var pusher = new Pusher('428fa18abbaf98f5b0b6');
 			var channel = pusher.subscribe('livenow');
+			new Backpusher(channel, events);
+
+			// Get the Socket ID of this client (to be used in preventing broadcast of its own messages back to itself).
+			var socketID = null;
+			pusher.connection.bind('connected', function() {
+				socketID = pusher.connection.socket_id;
+				console.log('My socket id is: ', socketID);
+			});
 
 			//Fetch the latest tasks and trigger an update of the views
 			events.fetch();
