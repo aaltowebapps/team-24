@@ -1,9 +1,17 @@
 require 'sinatra'
 require 'haml'
 require 'json'
+require 'pusher'
+
 
 
 set :port, 5678
+
+
+
+Pusher.app_id = '20691'
+Pusher.key = '428fa18abbaf98f5b0b6'
+Pusher.secret = '7efd4f23919374217721'
 
 
 
@@ -19,8 +27,12 @@ def timestamp
   Time.now.strftime("%d.%m.%Y %H:%M:%S")
 end
 
+
+
 $events = Array.new
 $nextID = 0;
+
+
 
 get '/' do
   # eventDB = File.open("eventData.json", "r")
@@ -88,6 +100,7 @@ post '/events' do
     puts "> > > Events list:"
     puts $events
     $nextID += 1
+    Pusher['livenow'].trigger('posted', event.to_json)
     event.to_json
   end
 end
@@ -112,6 +125,8 @@ put '/events/:id' do
     $events.unshift(event)
     puts "> > > Events list:"
     puts $events
+    Pusher['livenow'].trigger('put', event.to_json)
+    event.to_json
   end
 end
 
@@ -126,5 +141,7 @@ delete '/events/:id' do
     $events.delete(@ev[0])
     puts "> > > Events list:"
     puts $events
+    Pusher['livenow'].trigger('deleted', params[:id].to_i)
+    params[:id].to_i
   end
 end
