@@ -108,7 +108,8 @@ post '/events' do
 		puts "\n\n====== CREATING EVENT WITH ID: #{event[:id]} ======"
 		puts "> > > Events list:"
 		puts $events
-	
+
+		# Trigger Pusher event and pass the socket ID via the request header, as required by the Backpush framework.
 		Pusher['livenow'].trigger('posted', event.to_json, request.env["HTTP_X_PUSHER_SOCKET_ID"])
 	
 		event.to_json
