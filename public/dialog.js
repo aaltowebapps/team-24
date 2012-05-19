@@ -65,14 +65,20 @@ $(function () {
 
 // Attach a click event listener to the "List view" button of the home screen.
 $(document).on("click", "#openEditEventDialog", function() {
-  displayDialog();
+	
+	displayDialog();
+
 });
 
 
 
 // Create touchmove handler to disable scrolling when the dialog is open.
 $(function() {
-  $('body').on('touchmove', function(event){
-    if (isDialogOpen) event.preventDefault();
-  });
+
+	$('body').on('touchmove', function(event){
+
+		if (isDialogOpen) event.preventDefault();
+
+	});
+
 });

@@ -2,13 +2,20 @@
 
 <!-- SimpleDialog2 requires that we supply the data-role='content' part of the view, as follows.-->
 <div class='content' style='margin-left=10px;' data-role='content'>
+
   <form action='/newEvent' method='post'>
+
   	<input id='title' style='max-width:260px; margin-left: 5px; width: 255px' name='title' placeholder='Event description' data-mini='true' type='text' required='required'/>
     <label for='date'>Starting date and time:</label>
         <input id='startingDate' style='max-width:260px; margin-left: 5px; width: 255px' name='startingDate' type='datetime'/>
     <label for='duration' style='margin-left: 7px; padding-top: 10px;'>Minutes to expiration: </label>
+
     	<input id='duration' style='margin-left: 5px;' max='300' min='1' type='range' data-mini='true' value='5' />
+
   	<button id='postEntry' type='submit' data-mini='true'>Add</button>
+
   	<button id='deleteEntry' type='button' data-theme='e' data-mini='true'>Delete</button>
+
   </form>
+
 </div>
