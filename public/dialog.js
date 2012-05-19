@@ -8,7 +8,7 @@ isDialogOpen = false;
 
 
 // The following function opens a modal dialog using the SimpleDialog2 jQuery plugin.
-displayDialog = function() {
+displayDialog = function(attributes) {
   $('<div>').simpledialog2({
     mode: 'blank',
     headerText: 'Event details',
@@ -17,8 +17,8 @@ displayDialog = function() {
                     "<form action='/newEvent' method='post'>"+
                       "<label for='title' style='margin-left:7px; padding-top: 10px;'>Name / title:</label>"+
                         "<input id='title' style='max-width:260px;margin-left: 5px;width: 255px' name='title' data-mini='true' type='text' autofocus = 'autofocus' required='required'/>"+
-                      "<input id='latitude' name='latitude' hidden='hidden'/>"+
-                      "<input id='longitude' name='longitude' hidden='hidden'/>"+
+                      "<input id='latitude' name='latitude' type='hidden'/>"+
+                      "<input id='longitude' name='longitude' type='hidden'/>"+
                       "<table>"+
                           "<tr style='margin-left: 5px; width: 120px'>"+
                               "<td>Starting date:</td>"+
@@ -43,8 +43,8 @@ displayDialog = function() {
         console.log("longitude:", attributes.longitude);
         
         $("#title").attr('placeholder', attributes.title);
-        $("#latitude").text('value', attributes.latitude);
-        $("#longitude").text('value', attributes.longitude);       
+        $("#latitude").attr('value', attributes.latitude);
+        $("#longitude").attr('value', attributes.longitude);       
     },
     callbackOpenArgs: function() {
 

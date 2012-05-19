@@ -119,6 +119,50 @@ end
 
 
 
+post '/newEvent' do
+
+  data = JSON.parse(request.body.string)
+  
+  puts "part 1"
+  
+  if data.nil?
+  
+    status 400
+  
+  else
+  
+    puts "part 2"
+
+    event = {}
+    [:title, :latitude, :longitude, :startingDate, :startingTime, :duration,].each do |field|
+      event[field] = data[field.to_s] || ""
+    end
+
+  puts "part 3"
+
+    event[:id] = data[:id]
+    $events.unshift(event)
+  
+    puts "\n\n====== CREATING EVENT WITH ID: #{event[:id]} ======"
+    puts "> > > Events list:"
+    puts $events
+  
+    Pusher['livenow'].trigger('posted', event.to_json, request.env["HTTP_X_PUSHER_SOCKET_ID"])
+
+    puts "part 4"
+  
+    event.to_json
+  
+    puts "part 5"
+
+  end
+
+  puts "part 6"
+
+end
+
+
+
 put '/events/:id' do
 
 	puts "\n\n====== UPDATING EVENT WITH ID: #{params[:id]} ======"
