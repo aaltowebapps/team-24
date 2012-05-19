@@ -17,6 +17,8 @@ displayDialog = function() {
                     "<form action='/newEvent' method='post'>"+
                       "<label for='title' style='margin-left:7px; padding-top: 10px;'>Name / title:</label>"+
                         "<input id='title' style='max-width:260px;margin-left: 5px;width: 255px' name='title' data-mini='true' type='text' autofocus = 'autofocus' required='required'/>"+
+                      "<input id='latitude' name='latitude' hidden='hidden'/>"+
+                      "<input id='longitude' name='longitude' hidden='hidden'/>"+
                       "<table>"+
                           "<tr style='margin-left: 5px; width: 120px'>"+
                               "<td>Starting date:</td>"+
@@ -32,12 +34,17 @@ displayDialog = function() {
                           "</tr>"+
                       "</table>"+
                       "<label for='duration' style='margin-left: 7px;padding-top: 10px;'>Duration: </label>"+
-                        "<input id='duration' style='margin-left: 5px' max='300' min='1' type='range' data-mini='true' value='5' />"+
+                        "<input id='duration' style='margin-left: 5px' max='300' min='1' name='duration' type='range' data-mini='true' value='5' />"+
                       "<button id='postEntry' type='submit' data-mini='true'>Add</button>"+
                       "<button id='deleteEntry' type='button' data-theme='e' data-mini='true'>Delete</button></form></div>",
     callbackOpen: function() {
-        //$( "#startingDate" ).datepicker();
-        //$( "#startingTime" ).timePicker();
+        console.log("Open dialog - new event: ", attributes.title);
+        console.log("latitude: ", attributes.latitude);
+        console.log("longitude:", attributes.longitude);
+        
+        $("#title").attr('placeholder', attributes.title);
+        $("#latitude").text('value', attributes.latitude);
+        $("#longitude").text('value', attributes.longitude);       
     },
     callbackOpenArgs: function() {
 

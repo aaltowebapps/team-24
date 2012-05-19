@@ -147,7 +147,7 @@ $(function() {
 								'id'		: nextID
 							});
 
-							displayDialog();
+							displayDialog(i.attributes);
 						}
 				);
 			});
