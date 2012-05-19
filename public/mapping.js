@@ -27,7 +27,7 @@ function placeMarker(loc, isCurrentPos) {
 				draggable: false,	// Current position not draggable.
 				map: map,
 				zIndex: 0,			// Current position should not obstruct view to event pins.
-				icon: "arrow.png"
+				icon: "images/arrow.png"
 			});
 	}
 
