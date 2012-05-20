@@ -4,7 +4,7 @@ var intervalID;
 
 
 
-getTimeToStart = function (stringDate, stringTime) {
+getEventMiliseconds = function (stringDate, stringTime) { //time in miliseconds since 01.01.1970
     var y=0;
     var m=0;
     var d=0;
@@ -29,44 +29,59 @@ getTimeToStart = function (stringDate, stringTime) {
     var eveDate = new Date(y, m, d, th, tm, 0); // integers are expected
     var eveTime = eveDate.getTime(); // time in miliseconds since 01.01.1970
 
-    var nowDate = new Date();
-    var nowTime = nowDate.getTime(); // time in miliseconds since 01.01.1970
-    
-    var timeToStart = eveTime - nowTime;
-    
-    //console.log("timeToStart in milisec=", timeToStart);
-    var min = 1.0;
-    min = timeToStart / 60000;
-    console.log("timeToStart in minutes=", min); 
-    return timeToStart;
+    return eveTime;
 }
 
 
 
 verifyEvents = function() {
     console.log("\n\n verify events");
+
+    var nowDate = new Date();
+    var nowTime = nowDate.getTime(); // time in miliseconds since 01.01.1970
+    console.log("now time in milisec   =", nowTime);
+
+    // go through the whole list of events
     for (var i = 0; i < events.models.length; i++) {
+
         var ev = events.at(i);
+
         var date = ev.get('date');
         var time = ev.get('time');
         var dur = ev.get('duration');
         var id = ev.get('id');
 
-        // if the event was not updated yet, skip it for now
+        // if the event was not updated yet, skip it for now (being edited in dialog)
         if (date=="" || time=="") break;
         
         // otherwise verify it
-        var tts = getTimeToStart(date, time);
-        if (tts>0) {
+        var eveTime = getEventMiliseconds(date, time);
+        console.log("event time in milisec =", eveTime);
+
+        var min = (eveTime-nowTime) / 60000;
+        console.log("timeToStart in minutes=", min); 
+
+        if (eveTime > nowTime) {
+
             // not started yet
             console.log("wait for event id =", id);
-        } else {
-            // started or expired
-            var t = tts + dur*1000;
-            if (t>0) {
-                //started but not expired
+
+        } else { // started or expired
+
+            var d = dur*60000;
+
+            if ((eveTime+ d) < nowTime) { //expired
+                
+                console.log("expired event id =", id);
+                
+                // destroy the event
+                ev.destroy();
+
+            } else { //started but not expired
+
+                
                 console.log ("start the event - decrease remaining duration");
-                dur--;
+                var newDuration = dur-1;
                 
                 // update model information
                 events.at(i).save({
@@ -76,20 +91,11 @@ verifyEvents = function() {
                     'id'        : ev.get('id'),
                     'date'      : ev.get('date'),
                     'time'      : ev.get('time'),
-                    'duration'  : dur
+                    'duration'  : newDuration
                 });
-                
-                
-            } else {
-                //expired
-                console.log("expired event id =", id);
-                
-                // destroy it
-                ev.destroy();
-            }
-        }
-
-    }    
+            } // else started
+        } // started or expired
+    } // for
 }
 
 
