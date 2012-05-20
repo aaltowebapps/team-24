@@ -35,11 +35,10 @@ function placeMarker(loc, isCurrentPos) {
 	if (!isCurrentPos) {
 		google.maps.event.addListener(markLocation, 'dragend', function(event) {
 			// Find the model whose id matches the id of the pin.
-			for (var i = 0; i <= events.models.length - 1; i++) {
+			for (var i = 0; i < events.models.length; i++) {
 				if (markLocation.id == events.at(i).get('id')) {
 					// Update the model with the new coordinates
-					events.at(i).set({'longitude':markLocation.getPosition().lng(), 'latitude':markLocation.getPosition().lat()});
-					events.at(i).save();
+					events.at(i).save({'longitude':markLocation.getPosition().lng(), 'latitude':markLocation.getPosition().lat()});
 				}
 			}
 		});
@@ -49,7 +48,7 @@ function placeMarker(loc, isCurrentPos) {
     // But do this for new event pins, not for the pin representing the current location.
     if (isCurrentPos === false) {
 			google.maps.event.addListener(markLocation, 'click', function() {
-				displayDialog();		// This is declared in dialog.js
+				displayDialog(markLocation.id);		// This is declared in dialog.js
 			});
     }
 
@@ -79,9 +78,11 @@ $(function() {
 	// Hide address bar and adjust map div dimensions according to the device at hand.
 	// This needs to be done after every device rotation (i.e. window size change).
 	function resetMapDivDimensions() {
+		
 		window.scrollTo(0, 1);
 		var mapViewportHeight = window.innerHeight - $("#header").height();
 		$("#map").height(mapViewportHeight);
+
 	}
 
 	// Initialize map and mapping functions.
@@ -138,16 +139,19 @@ $(function() {
 
 							console.log('Got it! The new ID is: ', nextID);
 							
-							// Create (add & save) a model in the collection (sends a POST request to server).
+							// Create (add & save) a model in the Backbone collection.
 							var i = events.create({
 								'title'		: 'My New Event',
 								'duration'	: 60,
+								'date'		: '',
+								'time'		: '',
 								'longitude' : event.latLng.lng(),
 								'latitude'	: event.latLng.lat(),
 								'id'		: nextID
 							});
 
-							displayDialog();
+							// Invoke the dialog box for further data entry on the new model.
+							displayDialog(i.get('id'));
 						}
 				);
 			});
