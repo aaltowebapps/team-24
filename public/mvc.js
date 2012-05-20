@@ -1,5 +1,96 @@
 var Templates = {};
 var events;
+var intervalID;
+
+
+
+getTimeToStart = function (stringDate, stringTime) {
+    var y=0;
+    var m=0;
+    var d=0;
+    var th=0;  // time hours
+    var tm=0;  // time minutes
+    
+    console.log("stringDate =", stringDate);
+    console.log("stringTime=", stringTime);
+    var year = stringDate.slice(0,4);
+    var month = stringDate.slice(5,7);
+    var day = stringDate.slice(8,10);
+    var hour = stringTime.slice(0,2);
+    var minutes = stringTime.slice(3,5);
+    //console.log(year, month, day, hour, minutes);
+
+    y = y+year;
+    m = m+month-1;  // bug? in new Date(year, month, day, hours, minutes, seconds, milliseconds); - it creates a date in the next month
+    d = d+day;
+    th=th+hour;
+    tm=tm+minutes;
+    //console.log(y, m, d, th, tm);
+    var eveDate = new Date(y, m, d, th, tm, 0); // integers are expected
+    var eveTime = eveDate.getTime(); // time in miliseconds since 01.01.1970
+
+    var nowDate = new Date();
+    var nowTime = nowDate.getTime(); // time in miliseconds since 01.01.1970
+    
+    var timeToStart = eveTime - nowTime;
+    
+    //console.log("timeToStart in milisec=", timeToStart);
+    var min = 1.0;
+    min = timeToStart / 60000;
+    console.log("timeToStart in minutes=", min); 
+    return timeToStart;
+}
+
+
+
+verifyEvents = function() {
+    console.log("\n\n verify events");
+    for (var i = 0; i < events.models.length; i++) {
+        var ev = events.at(i);
+        var date = ev.get('date');
+        var time = ev.get('time');
+        var dur = ev.get('duration');
+        var id = ev.get('id');
+
+        // if the event was not updated yet, skip it for now
+        if (date=="" || time=="") break;
+        
+        // otherwise verify it
+        var tts = getTimeToStart(date, time);
+        if (tts>0) {
+            // not started yet
+            console.log("wait for event id =", id);
+        } else {
+            // started or expired
+            var t = tts + dur*1000;
+            if (t>0) {
+                //started but not expired
+                console.log ("start the event - decrease remaining duration");
+                dur--;
+                
+                // update model information
+                events.at(i).save({
+                    'longitude' : ev.get('longitude'),
+                    'latitude'  : ev.get('latitude'),
+                    'title'     : ev.get('title'),
+                    'id'        : ev.get('id'),
+                    'date'      : ev.get('date'),
+                    'time'      : ev.get('time'),
+                    'duration'  : dur
+                });
+                
+                
+            } else {
+                //expired
+                console.log("expired event id =", id);
+                
+                // destroy it
+                ev.destroy();
+            }
+        }
+
+    }    
+}
 
 
 
@@ -207,5 +298,7 @@ $(function() {
 	var listView = new ListView({collection: events});	// Backbone.js views.
 
 	var eventCounterView = new EventCounterView({collection: events});
+
+    intervalID = setInterval( "verifyEvents()", 60000);
 
 });
