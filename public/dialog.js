@@ -7,6 +7,63 @@ isDialogOpen = false;
 
 
 
+function eventStarts(eventID)
+{
+console.log("Event starts now! -> ", eventID);
+
+}
+
+timeoutToStart = function (eventID, tts) {
+    var timerID = 0;
+    
+    console.log("eventID=", eventID);
+    
+    timerID = setTimeout( function() {eventStarts (eventID) }, tts);
+    
+    console.log("timeout was set")
+    
+    return timerID;  
+}
+
+getTimeToStart = function (stringDate, stringTime) {
+    var y=0;
+    var m=0;
+    var d=0;
+    var th=0;
+    var tm=0;
+    
+    console.log("stringDate =", stringDate);
+    console.log("stringTime=", stringTime);
+    var year = stringDate.slice(0,4);
+    var month = stringDate.slice(5,7);
+    var day = stringDate.slice(8,10);
+    var hour = stringTime.slice(0,2);
+    var minutes = stringTime.slice(3,5);
+    console.log(year, month, day, hour, minutes);
+
+    y = y+year;
+    m = m+month-1;  // bug? in new Date(year, month, day, hours, minutes, seconds, milliseconds); - it creates a date in the next month
+    d = d+day;
+    th=th+hour;
+    tm=tm+minutes;
+    //console.log(y, m, d, th, tm);
+    var eveDate = new Date(y, m, d, th, tm, 0); // integers are expected
+    var eveTime = eveDate.getTime();
+
+    var nowDate = new Date();
+    var nowTime = nowDate.getTime();
+    
+    var timeToStart = eveTime - nowTime;
+    
+    console.log("timeToStart in milisec=", timeToStart);
+    var min = 1.0;
+    min = timeToStart / 60000;
+    console.log("timeToStart in minutes=", min); 
+    return timeToStart;
+}
+
+
+
 // The following function opens a modal dialog using the SimpleDialog2 jQuery plugin.
 displayDialog = function(model_id) {
 
@@ -36,7 +93,7 @@ displayDialog = function(model_id) {
 										"</td>"+
 									"</tr>"+
 								"</table>"+
-								"<label for='duration' style='margin-left: 7px;padding-top: 10px;'>Duration: </label>"+
+								"<label for='duration' style='margin-left: 7px;padding-top: 10px;'>Duration (min): </label>"+
 								"<input id='duration' style='margin-left: 5px' max='300' min='1' name='duration' type='range' data-mini='true' value='5' />"+
 								"<button rel='close' id='postEntry' type='submit' data-mini='true'>Confirm</button>"+
 								"<button rel='close' data-mini='true' data-theme='e' href='#' id='deleteEntry'>Delete</a>"+
@@ -44,7 +101,7 @@ displayDialog = function(model_id) {
 						"</div>",
 
 		callbackOpen: function() {
-			
+			var timer1 = 0;
 			// Block scrolling while dialog is open.
 			isDialogOpen = true;
 			
@@ -70,9 +127,24 @@ displayDialog = function(model_id) {
 			// Hijack the submit ('Confirm') button so that data is manipulated by Backbone instead of the default HTML form mechanism.
 			$(postEntry).on('click', function(event) {
 				
+				//var eventID = 0; 
+                var tts = getTimeToStart($('#startingDate').val(), $('#startingTime').val());
+                console.log("tts=", tts);
+                var dur = 1000 * $('#duration').val();
+                console.log("duration=", dur);
+                
+                if (tts >0) {
+                    //console.log("event id = ", events.at(i).get('id'));
+                    //eventID = eventID+events.at(i).get('id');
+                    //console.log("eventID=", eventID);
+                    timer1 = timeoutToStart(events.at(i).get('id'), tts);
+                } 
+                // save timer1 to the event so that we can call clearTimeout(timer1) if the event will be deleted
+                
 				// Override default click event for submit button.
 				event.preventDefault();
-
+				
+				
 				// Request that Backbone update model information.
 				events.at(i).save({
 					'longitude'	: events.at(i).get('longitude'),
