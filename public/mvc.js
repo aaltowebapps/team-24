@@ -4,7 +4,7 @@ var intervalID;
 
 
 
-getEventMiliseconds = function (stringDate, stringTime) { //time in miliseconds since 01.01.1970
+getEventMiliseconds = function (stringDate, stringTime) { //time in milliseconds since 01.01.1970
     var y=0;
     var m=0;
     var d=0;
@@ -27,7 +27,7 @@ getEventMiliseconds = function (stringDate, stringTime) { //time in miliseconds 
     tm=tm+minutes;
     //console.log(y, m, d, th, tm);
     var eveDate = new Date(y, m, d, th, tm, 0); // integers are expected
-    var eveTime = eveDate.getTime(); // time in miliseconds since 01.01.1970
+    var eveTime = eveDate.getTime(); // time in milliseconds since 01.01.1970
 
     return eveTime;
 }
@@ -38,8 +38,8 @@ verifyEvents = function() {
     console.log("\n\n verify events");
 
     var nowDate = new Date();
-    var nowTime = nowDate.getTime(); // time in miliseconds since 01.01.1970
-    console.log("now time in milisec   =", nowTime);
+    var nowTime = nowDate.getTime(); // time in milliseconds since 01.01.1970
+    console.log("now time in millisec   =", nowTime);
 
     // go through the whole list of events
     for (var i = 0; i < events.models.length; i++) {
@@ -52,14 +52,14 @@ verifyEvents = function() {
         var id = ev.get('id');
 
         // if the event was not updated yet, skip it for now (being edited in dialog)
-        if (date=="" || time=="") break;
+		if (date=="" || time=="") break;
         
         // otherwise verify it
         var eveTime = getEventMiliseconds(date, time);
         console.log("event time in milisec =", eveTime);
 
         var min = (eveTime-nowTime) / 60000;
-        console.log("timeToStart in minutes=", min); 
+        console.log("timeToStart in minutes=", min);
 
         if (eveTime > nowTime) {
 
@@ -78,7 +78,6 @@ verifyEvents = function() {
                 ev.destroy();
 
             } else { //started but not expired
-
                 
                 console.log ("start the event - decrease remaining duration");
                 var newDuration = dur-1;
@@ -160,7 +159,7 @@ var Events = Backbone.Collection.extend ({
 
 	initialize: function() {
 
-		// When the app is launched and data fetched, populated the client with preexisting pins.
+		// When the app is launched and data fetched, populate the client with preexisting pins.
 		this.on('reset', function() {
 			
 			// First efface all pins.
