@@ -98,11 +98,10 @@ post '/events' do
 	else
 	
 		event = {}
-		[:title, :duration, :latitude, :longitude, :date].each do |field|
+		[:title, :duration, :latitude, :longitude, :date, :time, :id, :started].each do |field|
 			event[field] = data[field.to_s] || ""
 		end
 		event[:timestamp] = timestamp
-		event[:id] = data[:id]
 		$events.unshift(event)
 	
 		puts "\n\n====== CREATING EVENT WITH ID: #{event[:id]} ======"
@@ -167,7 +166,7 @@ put '/events/:id' do
 
 	puts "\n\n====== UPDATING EVENT WITH ID: #{params[:id]} ======"
 
-	data = JSON.parse(request.body.string)
+	data = JSON.parse(request.body.read)
 
 	if data.nil?
 
@@ -176,11 +175,10 @@ put '/events/:id' do
 	else
 
 		event = {}
-		[:title, :duration, :latitude, :longitude, :date].each do |field|
+		[:title, :duration, :latitude, :longitude, :date, :time, :id, :started].each do |field|
 			event[field] = data[field.to_s] || ""
 		end
 		event[:timestamp] = timestamp
-		event[:id] = data[:id.to_s]
 
 		# Replace the event in the list of events
 		@ev = $events.select {|e| e[:id] == params[:id].to_i}

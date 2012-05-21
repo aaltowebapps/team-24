@@ -1,5 +1,103 @@
 var Templates = {};
 var events;
+var intervalID;
+
+
+
+getEventMiliseconds = function (stringDate, stringTime) { //time in milliseconds since 01.01.1970
+    var y=0;
+    var m=0;
+    var d=0;
+    var th=0;  // time hours
+    var tm=0;  // time minutes
+    
+    console.log("stringDate =", stringDate);
+    console.log("stringTime=", stringTime);
+    var year = stringDate.slice(0,4);
+    var month = stringDate.slice(5,7);
+    var day = stringDate.slice(8,10);
+    var hour = stringTime.slice(0,2);
+    var minutes = stringTime.slice(3,5);
+    //console.log(year, month, day, hour, minutes);
+
+    y = y+year;
+    m = m+month-1;  // bug? in new Date(year, month, day, hours, minutes, seconds, milliseconds); - it creates a date in the next month
+    d = d+day;
+    th=th+hour;
+    tm=tm+minutes;
+    //console.log(y, m, d, th, tm);
+    var eveDate = new Date(y, m, d, th, tm, 0); // integers are expected
+    var eveTime = eveDate.getTime(); // time in milliseconds since 01.01.1970
+
+    return eveTime;
+}
+
+
+
+verifyEvents = function() {
+    console.log("\n\n verify events");
+
+    var nowDate = new Date();
+    var nowTime = nowDate.getTime(); // time in milliseconds since 01.01.1970
+    console.log("now time in millisec   =", nowTime);
+
+    // go through the whole list of events
+    for (var i = 0; i < events.models.length; i++) {
+
+        var ev = events.at(i);
+
+        var date = ev.get('date');
+        var time = ev.get('time');
+        var dur = ev.get('duration');
+        var id = ev.get('id');
+
+        // if the event was not updated yet, skip it for now (being edited in dialog)
+		if (date=="" || time=="") break;
+        
+        // otherwise verify it
+        var eveTime = getEventMiliseconds(date, time);
+        console.log("event time in milisec =", eveTime);
+
+        var min = (eveTime-nowTime) / 60000;
+        console.log("timeToStart in minutes=", min);
+
+        if (eveTime > nowTime) {
+
+            // not started yet
+            console.log("wait for event id =", id);
+
+        } else { // started or expired
+
+            var d = dur*60000;
+
+            if ((eveTime+ d) < nowTime) { //expired
+                
+                console.log("expired event id =", id);
+                
+                // destroy the event
+                ev.destroy();
+
+            } else { //started but not expired
+                
+                console.log ("start the event - decrease remaining duration");
+                var newDuration = dur - 1;
+                
+                // update model information
+                events.at(i).save({
+                    'longitude' : ev.get('longitude'),
+                    'latitude'  : ev.get('latitude'),
+                    'title'     : ev.get('title'),
+                    'id'        : ev.get('id'),
+                    'date'      : ev.get('date'),
+                    'time'      : ev.get('time'),
+                    'duration'  : newDuration,
+                    'started'	: 'Ongoing'
+                });
+
+            } // else started
+        } // started or expired
+    } // for
+}
 
 
 
@@ -63,7 +161,7 @@ var Events = Backbone.Collection.extend ({
 
 	initialize: function() {
 
-		// When the app is launched and data fetched, populated the client with preexisting pins.
+		// When the app is launched and data fetched, populate the client with preexisting pins.
 		this.on('reset', function() {
 			
 			// First efface all pins.
@@ -108,6 +206,7 @@ $(function() {
 
 			this.model.on('change', this.render, this);
 			this.template = Templates.eventListTemplate;
+
 		},
 		
 		render: function() {
@@ -125,7 +224,6 @@ $(function() {
 
 			// Find the id of the model.
 			var id = this.model.get('id');
-			console.log("You just clicked on event with id# ", id);
 
 			var pindex;
 
@@ -175,7 +273,7 @@ $(function() {
 			if ($("#eventList").hasClass('ui-listview')) {		// Without this, this ver of jQuery throws an exception here. Details available on request :-)
 				$("#eventList").listview('refresh');		// jQuery listview not refreshed automatically when its html is changed.
 			}
-	
+			
 			return this;
 		}
 	});
@@ -197,6 +295,8 @@ $(function() {
 
 			$("#eventCounter1").html(this.template(this.collection.toJSON()));
 			$("#eventCounter2").html(this.template(this.collection.toJSON()));
+
+			flipflop();
 		}
 	
 	});
@@ -207,5 +307,7 @@ $(function() {
 	var listView = new ListView({collection: events});	// Backbone.js views.
 
 	var eventCounterView = new EventCounterView({collection: events});
+
+    intervalID = setInterval( "verifyEvents()", 60000);
 
 });

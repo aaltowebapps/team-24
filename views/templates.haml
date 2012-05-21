@@ -1,17 +1,29 @@
+-# The following makes the event counts in the header flicker, and is intended to be triggered whenever there is some important backend event.
+:javascript
+	flipflop = function() {
+		for (var i = 0; i < 6; i++) {
+			if (i % 2 === 0) setTimeout("$('#eventCounter1').attr('style', 'color: orange')", i * 200); else setTimeout("$('#eventCounter1').attr('style', 'color: white')", i*200);
+			if (i % 2 === 0) setTimeout("$('#eventCounter2').attr('style', 'color: orange')", i * 200); else setTimeout("$('#eventCounter2').attr('style', 'color: white')", i*200);
+		}
+	};
+
+
+
 -# Template for a single event in the list view.
 %script(id="eventListTemplate" type="text/x-handlebars-template")
+	%span(class="label label-warning" style="float:right; padding-right: 0px; border-right-width: 50px; margin-right: 50px; margin-top: 22px; padding-top: 2px; padding-left: 0px;") {{started}}
 	%a(data-rel="dialog" href="#")
 		%strong
 			{{title}}
 	%p(style="padding-left: 15px;")
-		date and time:
+		Starting date & time:
 		{{date}}
+		at
+		{{time}}
 	%p(style="padding-left: 15px;")
-		duration
+		Remaining event duration: 
 		{{duration}}
 		minutes
-	%p#ev(style="display: none") {{id}}
-	</li>
 -# Template for the events counter in headers.
 %script(id="eventCounterTemplate" type="text/x-handlebars-template")
 	{{length}}	Live Events
