@@ -90,7 +90,8 @@ verifyEvents = function() {
                     'id'        : ev.get('id'),
                     'date'      : ev.get('date'),
                     'time'      : ev.get('time'),
-                    'duration'  : newDuration
+                    'duration'  : newDuration,
+                    'started'	: 'Ongoing!'
                 });
 
             } // else started
@@ -205,6 +206,7 @@ $(function() {
 
 			this.model.on('change', this.render, this);
 			this.template = Templates.eventListTemplate;
+
 		},
 		
 		render: function() {
@@ -222,7 +224,6 @@ $(function() {
 
 			// Find the id of the model.
 			var id = this.model.get('id');
-			console.log("You just clicked on event with id# ", id);
 
 			var pindex;
 
@@ -273,8 +274,6 @@ $(function() {
 				$("#eventList").listview('refresh');		// jQuery listview not refreshed automatically when its html is changed.
 			}
 			
-			flipflop();
-
 			return this;
 		}
 	});
@@ -296,6 +295,8 @@ $(function() {
 
 			$("#eventCounter1").html(this.template(this.collection.toJSON()));
 			$("#eventCounter2").html(this.template(this.collection.toJSON()));
+
+			flipflop();
 		}
 	
 	});

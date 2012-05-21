@@ -147,7 +147,8 @@ $(function() {
 								'time'		: '',
 								'longitude' : event.latLng.lng(),
 								'latitude'	: event.latLng.lat(),
-								'id'		: nextID
+								'id'		: nextID,
+								'started'	: ""
 							});
 
 							// Invoke the dialog box for further data entry on the new model.

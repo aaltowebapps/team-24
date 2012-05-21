@@ -98,7 +98,7 @@ post '/events' do
 	else
 	
 		event = {}
-		[:title, :duration, :latitude, :longitude, :date, :time, :id].each do |field|
+		[:title, :duration, :latitude, :longitude, :date, :time, :id, :started].each do |field|
 			event[field] = data[field.to_s] || ""
 		end
 		event[:timestamp] = timestamp
@@ -131,7 +131,7 @@ put '/events/:id' do
 	else
 
 		event = {}
-		[:title, :duration, :latitude, :longitude, :date, :time, :id].each do |field|
+		[:title, :duration, :latitude, :longitude, :date, :time, :id, :started].each do |field|
 			event[field] = data[field.to_s] || ""
 		end
 		event[:timestamp] = timestamp
