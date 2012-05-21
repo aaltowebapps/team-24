@@ -122,7 +122,7 @@ put '/events/:id' do
 
 	puts "\n\n====== UPDATING EVENT WITH ID: #{params[:id]} ======"
 
-	data = JSON.parse(request.body.string)
+	data = JSON.parse(request.body.read)
 
 	if data.nil?
 

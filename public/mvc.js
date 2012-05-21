@@ -91,7 +91,7 @@ verifyEvents = function() {
                     'date'      : ev.get('date'),
                     'time'      : ev.get('time'),
                     'duration'  : newDuration,
-                    'started'	: 'Ongoing!'
+                    'started'	: 'Ongoing'
                 });
 
             } // else started
