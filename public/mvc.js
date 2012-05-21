@@ -80,7 +80,7 @@ verifyEvents = function() {
             } else { //started but not expired
                 
                 console.log ("start the event - decrease remaining duration");
-                var newDuration = dur-1;
+                var newDuration = dur - 1;
                 
                 // update model information
                 events.at(i).save({
@@ -92,6 +92,7 @@ verifyEvents = function() {
                     'time'      : ev.get('time'),
                     'duration'  : newDuration
                 });
+
             } // else started
         } // started or expired
     } // for
@@ -271,7 +272,9 @@ $(function() {
 			if ($("#eventList").hasClass('ui-listview')) {		// Without this, this ver of jQuery throws an exception here. Details available on request :-)
 				$("#eventList").listview('refresh');		// jQuery listview not refreshed automatically when its html is changed.
 			}
-	
+			
+			flipflop();
+
 			return this;
 		}
 	});

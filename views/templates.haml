@@ -1,3 +1,14 @@
+-# The following makes the event counts in the header flicker, and is intended to be triggered whenever there is some important backend event.
+:javascript
+	flipflop = function() {
+		for (var i = 0; i < 6; i++) {
+			if (i % 2 === 0) setTimeout("$('#eventCounter1').attr('style', 'color: orange')", i * 200); else setTimeout("$('#eventCounter1').attr('style', 'color: white')", i*200);
+			if (i % 2 === 0) setTimeout("$('#eventCounter2').attr('style', 'color: orange')", i * 200); else setTimeout("$('#eventCounter2').attr('style', 'color: white')", i*200);
+		}
+	};
+
+
+
 -# Template for a single event in the list view.
 %script(id="eventListTemplate" type="text/x-handlebars-template")
 	%a(data-rel="dialog" href="#")
